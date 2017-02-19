@@ -17,7 +17,6 @@ class PoiListViewController: UIViewController {
     @IBOutlet weak var navBar: UIToolbar!
     var managedObjectContext: NSManagedObjectContext? = nil
    
-    
     func setData(poiList: PoiListModel) {
         titleView.text = poiList.title
         infoView.text = poiList.info
@@ -30,12 +29,10 @@ class PoiListViewController: UIViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-       // showIntroModal()
     }
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
     }
     
     @IBAction func cancelButtonPressed() {
@@ -43,17 +40,17 @@ class PoiListViewController: UIViewController {
     }
     
     @IBAction func doneButtonPressed() {
+        // check here if we're editing an object or creating a new one.
         insertNewObject();
         dismiss(animated: true, completion: nil)
     }
     
     func insertNewObject() {
         let context = self.managedObjectContext!
-        let newEvent = PoiListModel(context: context)
-        
-        // If appropriate, configure the new managed object.
-        newEvent.timestamp = NSDate()
-        // Save the context.
+        let newPoiList = PoiListModel(context: context)
+        newPoiList.timestamp = NSDate()
+        newPoiList.title = titleView.text
+        newPoiList.info = infoView.text
         do {
             try context.save()
         } catch {

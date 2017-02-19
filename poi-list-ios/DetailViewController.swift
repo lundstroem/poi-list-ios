@@ -32,34 +32,81 @@ class DetailViewController: UIViewController, MKMapViewDelegate {
         // Do any additional setup after loading the view, typically from a nib.
         
       //  let employee = NSEntityDescription.insertNewObjectForEntityForName("Employee", inManagedObjectContext: managedObjectContext) as! AAAEmployeeMO
-        fetchPois()
+       
+        
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        
+        if(mapView != nil) {
+            // todo: might remove user location here..
+            mapView.removeAnnotations(mapView.annotations)
+        }
+        fetchPois()
+       
+        let longPressGesture = UILongPressGestureRecognizer(target: self, action: #selector(mapViewLongpressed))
+        mapView.addGestureRecognizer(longPressGesture)
+        
+    }
+    
+    func zoomMap() {
+        var zoomRect = MKMapRectNull
+        for pin in mapView.annotations {
+            let annotationPoint = MKMapPointForCoordinate(pin.coordinate);
+            let pointRect = MKMapRectMake(annotationPoint.x, annotationPoint.y, 0.1, 0.1);
+            zoomRect = MKMapRectUnion(zoomRect, pointRect);
+        }
+        let padding: CGFloat = 100
+        mapView.setVisibleMapRect(zoomRect, edgePadding:UIEdgeInsetsMake(padding, padding, padding, padding), animated: true)
+        mapView.delegate = self
+    }
     func fetchPois() {
         let poiFetch = NSFetchRequest<NSFetchRequestResult>(entityName: "PoiModel")
         poiFetch.predicate = NSPredicate(format: "list == %@", self.poiListModel!)
         do {
             let poisFetched = try managedObjectContext!.fetch(poiFetch) as! [PoiModel]
+            for poi in poisFetched {
+                addLocation(lat:poi.lat, long:poi.long, title:poi.title, info:poi.info)
+            }
             print("fetched PoiModel array:", poisFetched.count)
+            zoomMap()
         } catch {
-            fatalError("Failed to fetch employees: \(error)")
+            fatalError("Failed to fetch pois: \(error)")
         }
     }
 
-    func addLocation(lat: CLLocationDegrees, long: CLLocationDegrees, title: String, subtitle: String) {
+    func addLocation(lat: CLLocationDegrees, long: CLLocationDegrees, title: String?, info: String?) {
         let location = CLLocationCoordinate2DMake(lat, long)
         let dropPin = MKPointAnnotation()
         dropPin.coordinate = location
         dropPin.title = title
-        dropPin.subtitle = subtitle
-        
-        
+        dropPin.subtitle = info
         pinsArray.append(dropPin)
         if(mapView != nil) {
             mapView.addAnnotation(dropPin)
         } else {
             print("mapView is nil")
         }
+    }
+    func insertNewPoiObject(lat: CLLocationDegrees, long: CLLocationDegrees, title: String, info: String) {
+        let context = self.managedObjectContext!
+        let newPoi = PoiModel(context: context)
+        newPoi.title = title
+        newPoi.info = info
+        newPoi.lat = lat
+        newPoi.long = long
+        newPoi.list = poiListModel
+        do {
+            try context.save()
+        } catch {
+            // Replace this implementation with code to handle the error appropriately.
+            // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
+            let nserror = error as NSError
+            fatalError("Unresolved error \(nserror), \(nserror.userInfo)")
+        }
+    }
+    func savePoi(poi: PoiModel) {
+        //todo: need connection between pin and poimodel to update the coordinates after a move and save the context.
     }
     func mapViewTapped(gestureRecognizer: UIGestureRecognizer) {
         /*
@@ -91,7 +138,8 @@ class DetailViewController: UIViewController, MKMapViewDelegate {
         }
         alertController.addAction(cancelAction)
         let OKAction = UIAlertAction(title: "OK", style: .default) { action in
-            self.addLocation(lat: location.latitude, long: location.longitude, title: "title", subtitle: "subtitle")
+            self.addLocation(lat: location.latitude, long: location.longitude, title: "title", info: "subtitle")
+            self.insertNewPoiObject(lat: location.latitude, long: location.longitude, title: "title", info: "subtitle")
         }
         alertController.addAction(OKAction)
         let destroyAction = UIAlertAction(title: "Destroy", style: .destructive) { action in

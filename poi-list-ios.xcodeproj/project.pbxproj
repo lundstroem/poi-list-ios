@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		03BA11721E59EB9100612489 /* PoiListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BA11711E59EB9100612489 /* PoiListViewController.swift */; };
 		03BAC0841E59E2B700F349C9 /* PoiViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BAC0821E59E2B700F349C9 /* PoiViewController.swift */; };
-		03BAC0851E59E2B700F349C9 /* PoiData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BAC0831E59E2B700F349C9 /* PoiData.swift */; };
 		03C2DEB51E5094B500CFDA3E /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C2DEB41E5094B500CFDA3E /* AppDelegate.swift */; };
 		03C2DEB81E5094B500CFDA3E /* poi_list_ios.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 03C2DEB61E5094B500CFDA3E /* poi_list_ios.xcdatamodeld */; };
 		03C2DEBA1E5094B500CFDA3E /* MasterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C2DEB91E5094B500CFDA3E /* MasterViewController.swift */; };
@@ -41,7 +40,6 @@
 /* Begin PBXFileReference section */
 		03BA11711E59EB9100612489 /* PoiListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PoiListViewController.swift; sourceTree = "<group>"; };
 		03BAC0821E59E2B700F349C9 /* PoiViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PoiViewController.swift; sourceTree = "<group>"; };
-		03BAC0831E59E2B700F349C9 /* PoiData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PoiData.swift; sourceTree = "<group>"; };
 		03C2DEB11E5094B500CFDA3E /* poi-list-ios.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "poi-list-ios.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		03C2DEB41E5094B500CFDA3E /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		03C2DEB71E5094B500CFDA3E /* poi_list_ios.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = poi_list_ios.xcdatamodel; sourceTree = "<group>"; };
@@ -109,7 +107,6 @@
 			children = (
 				03BAC0821E59E2B700F349C9 /* PoiViewController.swift */,
 				03BA11711E59EB9100612489 /* PoiListViewController.swift */,
-				03BAC0831E59E2B700F349C9 /* PoiData.swift */,
 				03C2DEB41E5094B500CFDA3E /* AppDelegate.swift */,
 				03C2DEB91E5094B500CFDA3E /* MasterViewController.swift */,
 				03C2DEBB1E5094B500CFDA3E /* DetailViewController.swift */,
@@ -277,7 +274,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				03BAC0851E59E2B700F349C9 /* PoiData.swift in Sources */,
 				03C2DEB81E5094B500CFDA3E /* poi_list_ios.xcdatamodeld in Sources */,
 				03C2DEB51E5094B500CFDA3E /* AppDelegate.swift in Sources */,
 				03C2DEBA1E5094B500CFDA3E /* MasterViewController.swift in Sources */,
