@@ -14,13 +14,10 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     var detailViewController: DetailViewController? = nil
     var managedObjectContext: NSManagedObjectContext? = nil
 
-
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
         self.navigationItem.leftBarButtonItem = self.editButtonItem
-
-        let addButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(insertNewObject(_:)))
+        let addButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(presentAddModal(_:)))
         self.navigationItem.rightBarButtonItem = addButton
         if let split = self.splitViewController {
             let controllers = split.viewControllers
@@ -38,13 +35,22 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         // Dispose of any resources that can be recreated.
     }
 
+    func presentAddModal(_ sender: Any) {
+        let modalViewController = self.storyboard?.instantiateViewController(withIdentifier: "PoiListViewController") as! PoiListViewController
+        
+        modalViewController.modalPresentationStyle = .popover
+        modalViewController.managedObjectContext = self.fetchedResultsController.managedObjectContext
+        present(modalViewController, animated: true, completion: { () -> Void   in
+            print("modal completion")
+        })
+    }
+    
     func insertNewObject(_ sender: Any) {
         let context = self.fetchedResultsController.managedObjectContext
-        let newEvent = Event(context: context)
+        let newEvent = PoiListModel(context: context)
              
         // If appropriate, configure the new managed object.
         newEvent.timestamp = NSDate()
-
         // Save the context.
         do {
             try context.save()
@@ -63,7 +69,9 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
             if let indexPath = self.tableView.indexPathForSelectedRow {
             let object = self.fetchedResultsController.object(at: indexPath)
                 let controller = (segue.destination as! UINavigationController).topViewController as! DetailViewController
+                controller.managedObjectContext = self.fetchedResultsController.managedObjectContext
                 controller.detailItem = object
+                controller.poiListModel = object
                 controller.navigationItem.leftBarButtonItem = self.splitViewController?.displayModeButtonItem
                 controller.navigationItem.leftItemsSupplementBackButton = true
             }
@@ -109,18 +117,18 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         }
     }
 
-    func configureCell(_ cell: UITableViewCell, withEvent event: Event) {
+    func configureCell(_ cell: UITableViewCell, withEvent event: PoiListModel) {
         cell.textLabel!.text = event.timestamp!.description
     }
 
     // MARK: - Fetched results controller
 
-    var fetchedResultsController: NSFetchedResultsController<Event> {
+    var fetchedResultsController: NSFetchedResultsController<PoiListModel> {
         if _fetchedResultsController != nil {
             return _fetchedResultsController!
         }
         
-        let fetchRequest: NSFetchRequest<Event> = Event.fetchRequest()
+        let fetchRequest: NSFetchRequest<PoiListModel> = PoiListModel.fetchRequest()
         
         // Set the batch size to a suitable number.
         fetchRequest.fetchBatchSize = 20
@@ -147,7 +155,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         
         return _fetchedResultsController!
     }    
-    var _fetchedResultsController: NSFetchedResultsController<Event>? = nil
+    var _fetchedResultsController: NSFetchedResultsController<PoiListModel>? = nil
 
     func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
         self.tableView.beginUpdates()
@@ -171,7 +179,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
             case .delete:
                 tableView.deleteRows(at: [indexPath!], with: .fade)
             case .update:
-                self.configureCell(tableView.cellForRow(at: indexPath!)!, withEvent: anObject as! Event)
+                self.configureCell(tableView.cellForRow(at: indexPath!)!, withEvent: anObject as! PoiListModel)
             case .move:
                 tableView.moveRow(at: indexPath!, to: newIndexPath!)
         }
