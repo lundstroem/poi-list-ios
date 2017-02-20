@@ -6,6 +6,17 @@
 //  Copyright © 2017 Harry Lundström. All rights reserved.
 //
 
+
+/*
+ 
+ - add user location and decide how it should work. Zoom out once location is present, or do it manually with a button?
+ - export/import of json data. Check name and timestamp at import and ask to overwrite if already exists.
+ - write tests
+ - how should it work on ipad?
+ - decide on default data for lists and POIs
+ 
+ */
+
 import UIKit
 import CoreData
 
@@ -13,7 +24,6 @@ import CoreData
 class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDelegate {
 
     var window: UIWindow?
-
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
@@ -55,13 +65,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
     // MARK: - Split view
 
     func splitViewController(_ splitViewController: UISplitViewController, collapseSecondary secondaryViewController:UIViewController, onto primaryViewController:UIViewController) -> Bool {
+        /*
         guard let secondaryAsNavController = secondaryViewController as? UINavigationController else { return false }
         guard let topAsDetailController = secondaryAsNavController.topViewController as? DetailViewController else { return false }
-        if topAsDetailController.detailItem == nil {
+        */
+        
+        /*if topAsDetailController.detailItem == nil {
             // Return true to indicate that we have handled the collapse by doing nothing; the secondary controller will be discarded.
             return true
-        }
-        return false
+        }*/
+        return true
     }
     // MARK: - Core Data stack
 
@@ -86,7 +99,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
                  * The store could not be migrated to the current model version.
                  Check the error message to determine what the actual problem was.
                  */
-                fatalError("Unresolved error \(error), \(error.userInfo)")
+                print("Unresolved error \(error), \(error.userInfo)")
             }
         })
         return container
@@ -107,6 +120,5 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
             }
         }
     }
-
 }
 

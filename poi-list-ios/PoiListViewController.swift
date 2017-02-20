@@ -14,17 +14,26 @@ class PoiListViewController: UIViewController {
 
     @IBOutlet weak var titleView: UITextField!
     @IBOutlet weak var infoView: UITextView!
-    @IBOutlet weak var navBar: UIToolbar!
+    @IBOutlet weak var navItem: UINavigationItem!
     var managedObjectContext: NSManagedObjectContext? = nil
-   
-    func setData(poiList: PoiListModel) {
-        titleView.text = poiList.title
-        infoView.text = poiList.info
-    }
+    var poiListModel: PoiListModel? = nil
     
     override func viewDidLoad() {
         super.viewDidLoad()
         titleView.becomeFirstResponder()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        if let list = poiListModel {
+            if let navTitle = navItem {
+               navTitle.title = list.title
+            }
+            self.titleView.text = list.title
+            self.infoView.text = list.info
+        } else {
+            self.title = "New List"
+        }
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -36,28 +45,45 @@ class PoiListViewController: UIViewController {
     }
     
     @IBAction func cancelButtonPressed() {
+        exit()
         dismiss(animated: true, completion: nil)
     }
     
     @IBAction func doneButtonPressed() {
-        // check here if we're editing an object or creating a new one.
-        insertNewObject();
+        if let list = poiListModel {
+            saveObject(poiListModel: list)
+        } else {
+            insertNewObject();
+        }
+        exit()
         dismiss(animated: true, completion: nil)
     }
     
+    func saveObject(poiListModel: PoiListModel) {
+        if let moc = self.managedObjectContext {
+            poiListModel.title = titleView.text
+            poiListModel.info = infoView.text
+            do {
+                try moc.save()
+            } catch {
+                let nserror = error as NSError
+                print("Unresolved error \(nserror), \(nserror.userInfo)")
+            }
+        }
+    }
+    
     func insertNewObject() {
-        let context = self.managedObjectContext!
-        let newPoiList = PoiListModel(context: context)
-        newPoiList.timestamp = NSDate()
-        newPoiList.title = titleView.text
-        newPoiList.info = infoView.text
-        do {
-            try context.save()
-        } catch {
-            // Replace this implementation with code to handle the error appropriately.
-            // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-            let nserror = error as NSError
-            fatalError("Unresolved error \(nserror), \(nserror.userInfo)")
+        if let moc = self.managedObjectContext {
+            let newPoiList = PoiListModel(context: moc)
+            newPoiList.timestamp = NSDate()
+            newPoiList.title = titleView.text
+            newPoiList.info = infoView.text
+            do {
+                try moc.save()
+            } catch {
+                let nserror = error as NSError
+                print("Unresolved error \(nserror), \(nserror.userInfo)")
+            }
         }
     }
     

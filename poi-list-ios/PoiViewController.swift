@@ -8,37 +8,75 @@
 
 import UIKit
 import MapKit
+import CoreData
 
 class PoiViewController: UIViewController {
 
-    var pinTitle: String = ""
-    var pinSubtitle: String = ""
-    var pinLocation: CLLocationCoordinate2D = CLLocationCoordinate2DMake(0, 0)
+    @IBOutlet weak var titleView: UITextField!
+    @IBOutlet weak var infoView: UITextView!
     
-    func setData(title: String, subtitle: String, location: CLLocationCoordinate2D) {
-        pinTitle = title
-        pinSubtitle = subtitle
-        pinLocation = location
-    }
-    
+    var managedObjectContext: NSManagedObjectContext? = nil
+    var poiModel: PoiModel? = nil
+   
     override func viewDidLoad() {
         super.viewDidLoad()
+        let removeButton = UIBarButtonItem(barButtonSystemItem: .trash, target: self, action: #selector(deletePoi(_:)))
+        self.navigationItem.rightBarButtonItem = removeButton
+        titleView.becomeFirstResponder()
     }
 
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+    func savePoi() {
+        if let poi = poiModel {
+            poi.title = self.titleView.text
+            poi.info = self.infoView.text
+            if(poi.title == nil || poi.title == "") {
+                poi.title = "title"
+            }
+            if let moc = managedObjectContext {
+                do {
+                    try moc.save()
+                } catch {
+                    let nserror = error as NSError
+                    print("Unresolved error \(nserror), \(nserror.userInfo)")
+                }
+            }
+        }
     }
     
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
+    func deletePoi(_ sender: Any) {
+        if let poi = poiModel {
+            if let moc = managedObjectContext {
+                moc.delete(poi)
+                do {
+                    try moc.save()
+                } catch {
+                    let nserror = error as NSError
+                    print("Unresolved error \(nserror), \(nserror.userInfo)")
+                }
+                if let navController = self.navigationController {
+                    navController.popViewController(animated: true)
+                }
+            }
+        }
     }
-    */
-
+    
+    override func viewWillAppear(_ animated: Bool) {
+        if let poi = poiModel {
+            self.titleView.text = poi.title
+            self.infoView.text = poi.info
+        }
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        savePoi()
+    }
+    
+    override func didReceiveMemoryWarning() {
+        super.didReceiveMemoryWarning()
+    }
+    
+    func exit() {
+        titleView.resignFirstResponder()
+        infoView.resignFirstResponder()
+    }
 }

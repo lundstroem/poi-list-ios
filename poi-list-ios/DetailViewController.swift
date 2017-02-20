@@ -12,41 +12,49 @@ import CoreData
 
 class DetailViewController: UIViewController, MKMapViewDelegate {
 
-    //@IBOutlet weak var detailDescriptionLabel: UILabel!
+    class PoiModelPin {
+        var poiModel: PoiModel
+        var pin: MKPointAnnotation
+        init(poiModel: PoiModel, pin: MKPointAnnotation) {
+            self.poiModel = poiModel
+            self.pin = pin
+        }
+    }
+    
     @IBOutlet weak var mapView: MKMapView!
-    var pinsArray: [MKPointAnnotation] = []
+    var pinsArray: [PoiModelPin] = []
     var managedObjectContext: NSManagedObjectContext? = nil
     var poiListModel: PoiListModel? = nil
 
-    func configureView() {
-        // Update the user interface for the detail item.
-        /*if let detail = self.detailItem {
-            if let label = self.detailDescriptionLabel {
-                label.text = detail.timestamp!.description
-            }
-        }*/
-    }
-    
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
-        
-      //  let employee = NSEntityDescription.insertNewObjectForEntityForName("Employee", inManagedObjectContext: managedObjectContext) as! AAAEmployeeMO
-       
-        
+        definesPresentationContext = true
     }
     
     override func viewWillAppear(_ animated: Bool) {
-        
         if(mapView != nil) {
-            // todo: might remove user location here..
+            // todo: need to make sure we don't remove user location if present.
+            pinsArray.removeAll()
             mapView.removeAnnotations(mapView.annotations)
         }
+        if let list = poiListModel {
+            self.navigationItem.title = list.title
+        }
         fetchPois()
-       
         let longPressGesture = UILongPressGestureRecognizer(target: self, action: #selector(mapViewLongpressed))
         mapView.addGestureRecognizer(longPressGesture)
-        
+    }
+    
+    @IBAction func presentEditModal(_ sender: Any) {
+        if let moc = managedObjectContext {
+            let modalViewController = self.storyboard?.instantiateViewController(withIdentifier: "PoiListViewController") as! PoiListViewController
+            modalViewController.modalPresentationStyle = .popover
+            modalViewController.managedObjectContext = moc
+            modalViewController.poiListModel = poiListModel
+            present(modalViewController, animated: true, completion: { () -> Void   in
+                print("modal completion")
+            })
+        }
     }
     
     func zoomMap() {
@@ -60,35 +68,39 @@ class DetailViewController: UIViewController, MKMapViewDelegate {
         mapView.setVisibleMapRect(zoomRect, edgePadding:UIEdgeInsetsMake(padding, padding, padding, padding), animated: true)
         mapView.delegate = self
     }
+    
     func fetchPois() {
         let poiFetch = NSFetchRequest<NSFetchRequestResult>(entityName: "PoiModel")
-        poiFetch.predicate = NSPredicate(format: "list == %@", self.poiListModel!)
-        do {
-            let poisFetched = try managedObjectContext!.fetch(poiFetch) as! [PoiModel]
-            for poi in poisFetched {
-                addLocation(lat:poi.lat, long:poi.long, title:poi.title, info:poi.info)
+        if let listModel = self.poiListModel {
+            poiFetch.predicate = NSPredicate(format: "list == %@", listModel)
+            do {
+                let poisFetched = try managedObjectContext!.fetch(poiFetch) as! [PoiModel]
+                for poi in poisFetched {
+                    addLocation(poiModel: poi)
+                }
+                zoomMap()
+            } catch {
+                print("Failed to fetch POIs: \(error)")
             }
-            print("fetched PoiModel array:", poisFetched.count)
-            zoomMap()
-        } catch {
-            fatalError("Failed to fetch pois: \(error)")
         }
     }
 
-    func addLocation(lat: CLLocationDegrees, long: CLLocationDegrees, title: String?, info: String?) {
-        let location = CLLocationCoordinate2DMake(lat, long)
+    func addLocation(poiModel: PoiModel) {
+        let location = CLLocationCoordinate2DMake(poiModel.lat, poiModel.long)
         let dropPin = MKPointAnnotation()
         dropPin.coordinate = location
-        dropPin.title = title
-        dropPin.subtitle = info
-        pinsArray.append(dropPin)
+        dropPin.title = poiModel.title
+        dropPin.subtitle = poiModel.info
+        let poiPin = PoiModelPin(poiModel:poiModel, pin:dropPin)
+        pinsArray.append(poiPin)
         if(mapView != nil) {
             mapView.addAnnotation(dropPin)
         } else {
             print("mapView is nil")
         }
     }
-    func insertNewPoiObject(lat: CLLocationDegrees, long: CLLocationDegrees, title: String, info: String) {
+    
+    func insertNewPoiObject(lat: CLLocationDegrees, long: CLLocationDegrees, title: String, info: String) -> PoiModel {
         let context = self.managedObjectContext!
         let newPoi = PoiModel(context: context)
         newPoi.title = title
@@ -99,37 +111,41 @@ class DetailViewController: UIViewController, MKMapViewDelegate {
         do {
             try context.save()
         } catch {
-            // Replace this implementation with code to handle the error appropriately.
-            // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
             let nserror = error as NSError
-            fatalError("Unresolved error \(nserror), \(nserror.userInfo)")
+            print("Unresolved error \(nserror), \(nserror.userInfo)")
+        }
+        return newPoi
+    }
+    
+    func savePoiModelWithAnnotation(pin: MKAnnotation) {
+        if let poiModel = getModelForPin(pin:pin) {
+            poiModel.lat = pin.coordinate.latitude
+            poiModel.long = pin.coordinate.longitude
+            poiModel.title = pin.title!
+            poiModel.info = pin.subtitle!
+            let context = self.managedObjectContext!
+            do {
+                try context.save()
+            } catch {
+                let nserror = error as NSError
+                print("Unresolved error \(nserror), \(nserror.userInfo)")
+            }
         }
     }
-    func savePoi(poi: PoiModel) {
-        //todo: need connection between pin and poimodel to update the coordinates after a move and save the context.
+    
+    func getModelForPin(pin: MKAnnotation) -> PoiModel? {
+        for poiModelPin in pinsArray  {
+            if(poiModelPin.pin === pin) {
+                return poiModelPin.poiModel
+            }
+        }
+        return nil
     }
-    func mapViewTapped(gestureRecognizer: UIGestureRecognizer) {
-        /*
-         let touchPoint = gestureRecognizer.location(in: mapView)
-         let coordinate = mapView.convert(touchPoint, toCoordinateFrom: mapView)
-         addLocation(lat: coordinate.latitude, long: coordinate.longitude, title: "title", subtitle: "subtitle")
-         */
-    }
+    
     func mapViewLongpressed(gestureRecognizer: UIGestureRecognizer) {
-        /*
-         let touchPoint = gestureRecognizer.location(in: mapView)
-         let coordinate = mapView.convert(touchPoint, toCoordinateFrom: mapView)
-         addLocation(lat: coordinate.latitude, long: coordinate.longitude, title: "title", subtitle: "subtitle")
-         */
-        print("longpressed")
         let touchPoint = gestureRecognizer.location(in: mapView)
         let coordinate = mapView.convert(touchPoint, toCoordinateFrom: mapView)
-        // addLocation(lat: coordinate.latitude, long: coordinate.longitude, title: "title", subtitle: "subtitle")
-        
         showActionLongpress(location:coordinate)
-        
-        //let modalVC = PinViewController.instantiateFromStoryboard(self.storyboard!)
-        //self.presentViewController(modalVC, animated: true, completion: nil)
     }
     
     func showActionLongpress(location: CLLocationCoordinate2D) {
@@ -138,41 +154,26 @@ class DetailViewController: UIViewController, MKMapViewDelegate {
         }
         alertController.addAction(cancelAction)
         let OKAction = UIAlertAction(title: "OK", style: .default) { action in
-            self.addLocation(lat: location.latitude, long: location.longitude, title: "title", info: "subtitle")
-            self.insertNewPoiObject(lat: location.latitude, long: location.longitude, title: "title", info: "subtitle")
+            let poiModel = self.insertNewPoiObject(lat: location.latitude, long: location.longitude, title: "title", info: "subtitle")
+            self.addLocation(poiModel: poiModel)
+            
         }
         alertController.addAction(OKAction)
-        let destroyAction = UIAlertAction(title: "Destroy", style: .destructive) { action in
-            print(action)
-        }
-        alertController.addAction(destroyAction)
         self.present(alertController, animated: true) {
         }
     }
 
-
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-
-    var detailItem: PoiListModel? {
-        didSet {
-            // Update the view.
-            self.configureView()
-        }
     }
 
     //Responding to Map Position Changes
     func mapView(_ mapView: MKMapView, regionWillChangeAnimated animated: Bool) {
-        print("regionWillChangeAnimated");
     }
     func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool){
-        print("regionDidChangeAnimated");
     }
     // Loading the Map Data
     func mapViewWillStartLoadingMap(_ mapView: MKMapView) {
-        print("mapViewWillStartLoadingMap");
     }
     func mapViewDidFinishLoadingMap(_ mapView: MKMapView) {}
     func mapViewDidFailLoadingMap(_ mapView: MKMapView, withError error: Error) {}
@@ -208,14 +209,15 @@ class DetailViewController: UIViewController, MKMapViewDelegate {
     }
     func mapView(_ mapView: MKMapView, didAdd views: [MKAnnotationView]) {}
     func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
-        pushPinViewController()
+        let poiModel = getModelForPin(pin: view.annotation!)
+        pushPinViewController(poiModel:poiModel!)
     }
-    func pushPinViewController() {
+    func pushPinViewController(poiModel: PoiModel) {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        let abcViewController = storyboard.instantiateViewController(withIdentifier: "PoiViewController") as! PoiViewController
-        // todo: set data
-        abcViewController.title = "ABC"
-        navigationController?.pushViewController(abcViewController, animated: true)
+        let poiViewController = storyboard.instantiateViewController(withIdentifier: "PoiViewController") as! PoiViewController
+        poiViewController.poiModel = poiModel
+        poiViewController.managedObjectContext = self.managedObjectContext
+        navigationController?.pushViewController(poiViewController, animated: true)
     }
     // Dragging an Annotation View
     func mapView(_ mapView: MKMapView,
@@ -223,14 +225,8 @@ class DetailViewController: UIViewController, MKMapViewDelegate {
                  didChange newState: MKAnnotationViewDragState,
                  fromOldState oldState: MKAnnotationViewDragState) {
         switch newState {
-            /*
-             case .starting:
-             print("starting");
-             view.dragState = .dragging
-             case .ending, .canceling:
-             print("ending");
-             view.dragState = .none
-             */
+        case .ending, .canceling:
+            savePoiModelWithAnnotation(pin:view.annotation!)
         default: break
         }
     }
