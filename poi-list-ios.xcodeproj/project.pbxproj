@@ -18,6 +18,11 @@
 		03C2DEC41E5094B500CFDA3E /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 03C2DEC21E5094B500CFDA3E /* LaunchScreen.storyboard */; };
 		03C2DECF1E5094B500CFDA3E /* poi_list_iosTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C2DECE1E5094B500CFDA3E /* poi_list_iosTests.swift */; };
 		03C2DEDA1E5094B500CFDA3E /* poi_list_iosUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C2DED91E5094B500CFDA3E /* poi_list_iosUITests.swift */; };
+		03FC38FC1E5DF4AE00093D5A /* EmailManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03FC38FB1E5DF4AE00093D5A /* EmailManager.swift */; };
+		03FC39021E5E109F00093D5A /* file_icon_22x29.png in Resources */ = {isa = PBXBuildFile; fileRef = 03FC38FE1E5E109F00093D5A /* file_icon_22x29.png */; };
+		03FC39031E5E109F00093D5A /* file_icon_320x320.png in Resources */ = {isa = PBXBuildFile; fileRef = 03FC38FF1E5E109F00093D5A /* file_icon_320x320.png */; };
+		03FC39041E5E109F00093D5A /* file_icon_44x58.png in Resources */ = {isa = PBXBuildFile; fileRef = 03FC39001E5E109F00093D5A /* file_icon_44x58.png */; };
+		03FC39051E5E109F00093D5A /* file_icon_64x64.png in Resources */ = {isa = PBXBuildFile; fileRef = 03FC39011E5E109F00093D5A /* file_icon_64x64.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -55,6 +60,11 @@
 		03C2DED51E5094B500CFDA3E /* poi-list-iosUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "poi-list-iosUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		03C2DED91E5094B500CFDA3E /* poi_list_iosUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = poi_list_iosUITests.swift; sourceTree = "<group>"; };
 		03C2DEDB1E5094B500CFDA3E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		03FC38FB1E5DF4AE00093D5A /* EmailManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmailManager.swift; sourceTree = "<group>"; };
+		03FC38FE1E5E109F00093D5A /* file_icon_22x29.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = file_icon_22x29.png; sourceTree = "<group>"; };
+		03FC38FF1E5E109F00093D5A /* file_icon_320x320.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = file_icon_320x320.png; sourceTree = "<group>"; };
+		03FC39001E5E109F00093D5A /* file_icon_44x58.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = file_icon_44x58.png; sourceTree = "<group>"; };
+		03FC39011E5E109F00093D5A /* file_icon_64x64.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = file_icon_64x64.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -85,6 +95,7 @@
 		03C2DEA81E5094B500CFDA3E = {
 			isa = PBXGroup;
 			children = (
+				03FC38FD1E5E109F00093D5A /* res */,
 				03C2DEB31E5094B500CFDA3E /* poi-list-ios */,
 				03C2DECD1E5094B500CFDA3E /* poi-list-iosTests */,
 				03C2DED81E5094B500CFDA3E /* poi-list-iosUITests */,
@@ -110,6 +121,7 @@
 				03C2DEB41E5094B500CFDA3E /* AppDelegate.swift */,
 				03C2DEB91E5094B500CFDA3E /* MasterViewController.swift */,
 				03C2DEBB1E5094B500CFDA3E /* DetailViewController.swift */,
+				03FC38FB1E5DF4AE00093D5A /* EmailManager.swift */,
 				03C2DEBD1E5094B500CFDA3E /* Main.storyboard */,
 				03C2DEC01E5094B500CFDA3E /* Assets.xcassets */,
 				03C2DEC21E5094B500CFDA3E /* LaunchScreen.storyboard */,
@@ -135,6 +147,17 @@
 				03C2DEDB1E5094B500CFDA3E /* Info.plist */,
 			);
 			path = "poi-list-iosUITests";
+			sourceTree = "<group>";
+		};
+		03FC38FD1E5E109F00093D5A /* res */ = {
+			isa = PBXGroup;
+			children = (
+				03FC38FE1E5E109F00093D5A /* file_icon_22x29.png */,
+				03FC38FF1E5E109F00093D5A /* file_icon_320x320.png */,
+				03FC39001E5E109F00093D5A /* file_icon_44x58.png */,
+				03FC39011E5E109F00093D5A /* file_icon_64x64.png */,
+			);
+			path = res;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -247,6 +270,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				03FC39041E5E109F00093D5A /* file_icon_44x58.png in Resources */,
+				03FC39031E5E109F00093D5A /* file_icon_320x320.png in Resources */,
+				03FC39021E5E109F00093D5A /* file_icon_22x29.png in Resources */,
+				03FC39051E5E109F00093D5A /* file_icon_64x64.png in Resources */,
 				03C2DEC41E5094B500CFDA3E /* LaunchScreen.storyboard in Resources */,
 				03C2DEC11E5094B500CFDA3E /* Assets.xcassets in Resources */,
 				03C2DEBF1E5094B500CFDA3E /* Main.storyboard in Resources */,
@@ -275,6 +302,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				03C2DEB81E5094B500CFDA3E /* poi_list_ios.xcdatamodeld in Sources */,
+				03FC38FC1E5DF4AE00093D5A /* EmailManager.swift in Sources */,
 				03C2DEB51E5094B500CFDA3E /* AppDelegate.swift in Sources */,
 				03C2DEBA1E5094B500CFDA3E /* MasterViewController.swift in Sources */,
 				03BAC0841E59E2B700F349C9 /* PoiViewController.swift in Sources */,

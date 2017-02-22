@@ -10,8 +10,56 @@ import UIKit
 import MapKit
 import CoreData
 
+/* JSONSerializable:
+ http://www.sthoughts.com/2016/06/30/swift-3-serializing-swift-structs-to-json/
+*/
+protocol JSONRepresentable {
+    var JSONRepresentation: Any { get }
+}
+
+protocol JSONSerializable: JSONRepresentable {
+}
+
+extension JSONSerializable {
+    var JSONRepresentation: Any {
+        var representation = [String: Any]()
+        for case let (label?, value) in Mirror(reflecting: self).children {
+            switch value {
+            case let value as Dictionary<String, Any>:
+                representation[label] = value as AnyObject
+            case let value as Array<Any>:
+                if let val = value as? [JSONSerializable] {
+                    representation[label] = val.map({ $0.JSONRepresentation as AnyObject }) as AnyObject
+                } else {
+                    representation[label] = value as AnyObject
+                }
+            case let value:
+                representation[label] = value as AnyObject
+            }
+        }
+        return representation as Any
+    }
+}
+
+extension JSONSerializable {
+    func toJSON() -> String? {
+        let representation = JSONRepresentation
+        guard JSONSerialization.isValidJSONObject(representation) else {
+            print("Invalid JSON Representation")
+            return nil
+        }
+        do {
+            let data = try JSONSerialization.data(withJSONObject: representation, options: [])
+            return String(data: data, encoding: .utf8)
+        } catch {
+            return nil
+        }
+    }
+}
+
 class DetailViewController: UIViewController, MKMapViewDelegate {
 
+    // associate a PoiModel with a Pin
     class PoiModelPin {
         var poiModel: PoiModel
         var pin: MKPointAnnotation
@@ -21,14 +69,32 @@ class DetailViewController: UIViewController, MKMapViewDelegate {
         }
     }
     
+    // I found no easy way to get JSON from Core Data so I'll use these intermediate models for now to 
+    // create JSON.
+    struct PoiList: JSONSerializable {
+        var title: String
+        var info: String
+        var timestamp: String
+        var pois: [JSONSerializable]
+    }
+    
+    struct Poi: JSONSerializable {
+        var title: String
+        var info: String
+        var lat: Double
+        var long: Double
+    }
+    
     @IBOutlet weak var mapView: MKMapView!
     var pinsArray: [PoiModelPin] = []
     var managedObjectContext: NSManagedObjectContext? = nil
     var poiListModel: PoiListModel? = nil
-
+    var emailManager: EmailManager?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         definesPresentationContext = true
+        emailManager = EmailManager()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -40,7 +106,8 @@ class DetailViewController: UIViewController, MKMapViewDelegate {
         if let list = poiListModel {
             self.navigationItem.title = list.title
         }
-        fetchPois()
+        let pois = fetchPois()
+        addPinsToMap(poiModels: pois)
         let longPressGesture = UILongPressGestureRecognizer(target: self, action: #selector(mapViewLongpressed))
         mapView.addGestureRecognizer(longPressGesture)
     }
@@ -69,20 +136,72 @@ class DetailViewController: UIViewController, MKMapViewDelegate {
         mapView.delegate = self
     }
     
-    func fetchPois() {
+    func fetchPois() -> [PoiModel] {
         let poiFetch = NSFetchRequest<NSFetchRequestResult>(entityName: "PoiModel")
         if let listModel = self.poiListModel {
             poiFetch.predicate = NSPredicate(format: "list == %@", listModel)
             do {
                 let poisFetched = try managedObjectContext!.fetch(poiFetch) as! [PoiModel]
-                for poi in poisFetched {
-                    addLocation(poiModel: poi)
-                }
-                zoomMap()
+                return poisFetched
             } catch {
                 print("Failed to fetch POIs: \(error)")
             }
         }
+        let emptyArray: [PoiModel] = []
+        return emptyArray
+    }
+
+    func sendMail(json: String) {
+        emailManager!.sendMailTo(subject: "POI List", body: "body", attachment: json, fromViewController: self)
+    }
+    
+    func getPoiListAsJSON() -> String? {
+        if let list = poiListModel {
+            let pois = fetchPois()
+            var poiModels: [Poi] = []
+            for poi in pois {
+                var title = "title"
+                if let p_title = poi.title {
+                    title = p_title
+                }
+                let info = "info"
+                if let p_info = poi.info {
+                    title = p_info
+                }
+                poiModels.insert(Poi(title:title, info:info, lat:poi.lat, long:poi.long), at: 0)
+            }
+            var title = "title"
+            if let p_title = list.title {
+                title = p_title
+            }
+            var info = "info"
+            if let p_info = list.info {
+                info = p_info
+            }
+            var timestamp = "timestamp"
+            if let p_timestamp = list.timestamp {
+                timestamp = p_timestamp
+            }
+            let list = PoiList(title: title, info:info, timestamp: timestamp, pois:poiModels)
+            if let json = list.toJSON() {
+                print(json)
+                return json
+            }
+        }
+        return nil
+    }
+    
+    @IBAction func exportList(_ sender: Any) {
+        if let json = getPoiListAsJSON() {
+            sendMail(json: json)
+        }
+    }
+    
+    func addPinsToMap(poiModels: [PoiModel]) {
+        for poi in poiModels {
+            addLocation(poiModel: poi)
+        }
+        zoomMap()
     }
 
     func addLocation(poiModel: PoiModel) {

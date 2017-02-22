@@ -10,7 +10,7 @@
 /*
  
  - add user location and decide how it should work. Zoom out once location is present, or do it manually with a button?
- - export/import of json data. Check name and timestamp at import and ask to overwrite if already exists.
+ - import of json data. Check name and timestamp at import and ask to overwrite if already exists.
  - write tests
  - how should it work on ipad?
  - decide on default data for lists and POIs
@@ -24,9 +24,10 @@ import CoreData
 class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDelegate {
 
     var window: UIWindow?
-
+    
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
+        
         let splitViewController = self.window!.rootViewController as! UISplitViewController
         let navigationController = splitViewController.viewControllers[splitViewController.viewControllers.count-1] as! UINavigationController
         navigationController.topViewController!.navigationItem.leftBarButtonItem = splitViewController.displayModeButtonItem
@@ -37,7 +38,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
         controller.managedObjectContext = self.persistentContainer.viewContext
         return true
     }
-
+    
+    func application(_ app: UIApplication, open url: URL, options: [UIApplicationOpenURLOptionsKey : Any] = [:]) -> Bool {
+        do {
+            let contents = try String(contentsOf: url)
+            print("urldata:",contents)
+            
+            // todo: parse JSON
+            // check if name + timestamp already exists, in that case present yes/no overwrite dialog, else just add.
+        } catch {
+            // contents could not be loaded
+        }
+        return false
+    }
+    
     func applicationWillResignActive(_ application: UIApplication) {
         // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
         // Use this method to pause ongoing tasks, disable timers, and invalidate graphics rendering callbacks. Games should use this method to pause the game.

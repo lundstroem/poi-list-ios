@@ -72,10 +72,13 @@ class PoiListViewController: UIViewController {
         }
     }
     
+    
     func insertNewObject() {
         if let moc = self.managedObjectContext {
+            let timestamp_double:Double = NSDate().timeIntervalSince1970
+            let timestamp: String = "\(timestamp_double)"
             let newPoiList = PoiListModel(context: moc)
-            newPoiList.timestamp = NSDate()
+            newPoiList.timestamp = timestamp
             newPoiList.title = titleView.text
             newPoiList.info = infoView.text
             do {

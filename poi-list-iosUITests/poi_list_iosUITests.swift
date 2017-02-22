@@ -1,3 +1,4 @@
+
 //
 //  poi_list_iosUITests.swift
 //  poi-list-iosUITests
@@ -28,9 +29,14 @@ class poi_list_iosUITests: XCTestCase {
         super.tearDown()
     }
     
-    func testExample() {
+    func testCreateAndRemovePoiList() {
         // Use recording to get started writing UI tests.
         // Use XCTAssert and related functions to verify your tests produce the correct results.
+        
+       
+        
     }
+    
+    
     
 }

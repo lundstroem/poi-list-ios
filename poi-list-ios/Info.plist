@@ -4,6 +4,34 @@
 <dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
+	<key>CFBundleDocumentTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>poilist</string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>poilist type</string>
+			<key>CFBundleTypeIconFiles</key>
+			<array>
+				<string>file_icon_320x320</string>
+				<string>file_icon_64x64</string>
+				<string>file_icon_44x58</string>
+				<string>file_icon_22x29</string>
+			</array>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>LSHandlerRank</key>
+			<string>Owner</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>com.harrylundstrom.poilist.poilist</string>
+			</array>
+		</dict>
+	</array>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -12,6 +40,30 @@
 	<string>6.0</string>
 	<key>CFBundleName</key>
 	<string>$(PRODUCT_NAME)</string>
+	<key>UTExportedTypeDeclarations</key>
+	<array>
+		<dict>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>public.text</string>
+			</array>
+			<key>UTTypeIdentifier</key>
+			<string>com.harrylundstrom.poilist.poilist</string>
+			<key>UTTypeSize320IconFile</key>
+			<string>file_icon_320x320</string>
+			<key>UTTypeSize64IconFile</key>
+			<string>file_icon_64x64</string>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.mime-type</key>
+				<string>application/json</string>
+				<key>public.filename-extension</key>
+				<array>
+					<string>poilist</string>
+				</array>
+			</dict>
+		</dict>
+	</array>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
