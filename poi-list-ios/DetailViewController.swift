@@ -10,52 +10,6 @@ import UIKit
 import MapKit
 import CoreData
 
-/* JSONSerializable:
- http://www.sthoughts.com/2016/06/30/swift-3-serializing-swift-structs-to-json/
-*/
-protocol JSONRepresentable {
-    var JSONRepresentation: Any { get }
-}
-
-protocol JSONSerializable: JSONRepresentable {
-}
-
-extension JSONSerializable {
-    var JSONRepresentation: Any {
-        var representation = [String: Any]()
-        for case let (label?, value) in Mirror(reflecting: self).children {
-            switch value {
-            case let value as Dictionary<String, Any>:
-                representation[label] = value as AnyObject
-            case let value as Array<Any>:
-                if let val = value as? [JSONSerializable] {
-                    representation[label] = val.map({ $0.JSONRepresentation as AnyObject }) as AnyObject
-                } else {
-                    representation[label] = value as AnyObject
-                }
-            case let value:
-                representation[label] = value as AnyObject
-            }
-        }
-        return representation as Any
-    }
-}
-
-extension JSONSerializable {
-    func toJSON() -> String? {
-        let representation = JSONRepresentation
-        guard JSONSerialization.isValidJSONObject(representation) else {
-            print("Invalid JSON Representation")
-            return nil
-        }
-        do {
-            let data = try JSONSerialization.data(withJSONObject: representation, options: [])
-            return String(data: data, encoding: .utf8)
-        } catch {
-            return nil
-        }
-    }
-}
 
 class DetailViewController: UIViewController, MKMapViewDelegate {
 
@@ -67,22 +21,6 @@ class DetailViewController: UIViewController, MKMapViewDelegate {
             self.poiModel = poiModel
             self.pin = pin
         }
-    }
-    
-    // I found no easy way to get JSON from Core Data so I'll use these intermediate models for now to 
-    // create JSON.
-    struct PoiList: JSONSerializable {
-        var title: String
-        var info: String
-        var timestamp: String
-        var pois: [JSONSerializable]
-    }
-    
-    struct Poi: JSONSerializable {
-        var title: String
-        var info: String
-        var lat: Double
-        var long: Double
     }
     
     @IBOutlet weak var mapView: MKMapView!
@@ -106,7 +44,7 @@ class DetailViewController: UIViewController, MKMapViewDelegate {
         if let list = poiListModel {
             self.navigationItem.title = list.title
         }
-        let pois = fetchPois()
+        let pois = fetchPois(poiListModel:poiListModel, managedObjectContext: managedObjectContext)
         addPinsToMap(poiModels: pois)
         let longPressGesture = UILongPressGestureRecognizer(target: self, action: #selector(mapViewLongpressed))
         mapView.addGestureRecognizer(longPressGesture)
@@ -136,63 +74,12 @@ class DetailViewController: UIViewController, MKMapViewDelegate {
         mapView.delegate = self
     }
     
-    func fetchPois() -> [PoiModel] {
-        let poiFetch = NSFetchRequest<NSFetchRequestResult>(entityName: "PoiModel")
-        if let listModel = self.poiListModel {
-            poiFetch.predicate = NSPredicate(format: "list == %@", listModel)
-            do {
-                let poisFetched = try managedObjectContext!.fetch(poiFetch) as! [PoiModel]
-                return poisFetched
-            } catch {
-                print("Failed to fetch POIs: \(error)")
-            }
-        }
-        let emptyArray: [PoiModel] = []
-        return emptyArray
-    }
-
     func sendMail(json: String) {
         emailManager!.sendMailTo(subject: "POI List", body: "body", attachment: json, fromViewController: self)
     }
     
-    func getPoiListAsJSON() -> String? {
-        if let list = poiListModel {
-            let pois = fetchPois()
-            var poiModels: [Poi] = []
-            for poi in pois {
-                var title = "title"
-                if let p_title = poi.title {
-                    title = p_title
-                }
-                let info = "info"
-                if let p_info = poi.info {
-                    title = p_info
-                }
-                poiModels.insert(Poi(title:title, info:info, lat:poi.lat, long:poi.long), at: 0)
-            }
-            var title = "title"
-            if let p_title = list.title {
-                title = p_title
-            }
-            var info = "info"
-            if let p_info = list.info {
-                info = p_info
-            }
-            var timestamp = "timestamp"
-            if let p_timestamp = list.timestamp {
-                timestamp = p_timestamp
-            }
-            let list = PoiList(title: title, info:info, timestamp: timestamp, pois:poiModels)
-            if let json = list.toJSON() {
-                print(json)
-                return json
-            }
-        }
-        return nil
-    }
-    
     @IBAction func exportList(_ sender: Any) {
-        if let json = getPoiListAsJSON() {
+        if let json = getPoiListAsJSON(poiListModel:poiListModel, managedObjectContext: managedObjectContext) {
             sendMail(json: json)
         }
     }
@@ -214,40 +101,26 @@ class DetailViewController: UIViewController, MKMapViewDelegate {
         pinsArray.append(poiPin)
         if(mapView != nil) {
             mapView.addAnnotation(dropPin)
-        } else {
-            print("mapView is nil")
         }
     }
     
-    func insertNewPoiObject(lat: CLLocationDegrees, long: CLLocationDegrees, title: String, info: String) -> PoiModel {
-        let context = self.managedObjectContext!
-        let newPoi = PoiModel(context: context)
-        newPoi.title = title
-        newPoi.info = info
-        newPoi.lat = lat
-        newPoi.long = long
-        newPoi.list = poiListModel
-        do {
-            try context.save()
-        } catch {
-            let nserror = error as NSError
-            print("Unresolved error \(nserror), \(nserror.userInfo)")
-        }
-        return newPoi
+    func addNewPoiModel(lat: CLLocationDegrees, long: CLLocationDegrees, title: String, info: String) -> PoiModel? {
+        return insertNewPoiModel(title: title, info: info, lat: lat, long: long, poiListModel: poiListModel, managedObjectContext: managedObjectContext)
     }
     
-    func savePoiModelWithAnnotation(pin: MKAnnotation) {
+    func savePoiModelForAnnotation(pin: MKAnnotation) {
         if let poiModel = getModelForPin(pin:pin) {
-            poiModel.lat = pin.coordinate.latitude
-            poiModel.long = pin.coordinate.longitude
-            poiModel.title = pin.title!
-            poiModel.info = pin.subtitle!
-            let context = self.managedObjectContext!
-            do {
-                try context.save()
-            } catch {
-                let nserror = error as NSError
-                print("Unresolved error \(nserror), \(nserror.userInfo)")
+            if let moc = self.managedObjectContext {
+                poiModel.lat = pin.coordinate.latitude
+                poiModel.long = pin.coordinate.longitude
+                poiModel.title = pin.title!
+                poiModel.info = pin.subtitle!
+                do {
+                    try moc.save()
+                } catch {
+                    let nserror = error as NSError
+                    print("Unresolved error \(nserror), \(nserror.userInfo)")
+                }
             }
         }
     }
@@ -273,9 +146,9 @@ class DetailViewController: UIViewController, MKMapViewDelegate {
         }
         alertController.addAction(cancelAction)
         let OKAction = UIAlertAction(title: "OK", style: .default) { action in
-            let poiModel = self.insertNewPoiObject(lat: location.latitude, long: location.longitude, title: "title", info: "subtitle")
-            self.addLocation(poiModel: poiModel)
-            
+            if let poiModel = self.addNewPoiModel(lat: location.latitude, long: location.longitude, title: "title", info: "info") {
+                self.addLocation(poiModel: poiModel)
+            }
         }
         alertController.addAction(OKAction)
         self.present(alertController, animated: true) {
@@ -345,7 +218,7 @@ class DetailViewController: UIViewController, MKMapViewDelegate {
                  fromOldState oldState: MKAnnotationViewDragState) {
         switch newState {
         case .ending, .canceling:
-            savePoiModelWithAnnotation(pin:view.annotation!)
+            savePoiModelForAnnotation(pin:view.annotation!)
         default: break
         }
     }

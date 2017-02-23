@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		032279F51E5EF22600C5F0E5 /* DataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032279F41E5EF22600C5F0E5 /* DataManager.swift */; };
 		03BA11721E59EB9100612489 /* PoiListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BA11711E59EB9100612489 /* PoiListViewController.swift */; };
 		03BAC0841E59E2B700F349C9 /* PoiViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BAC0821E59E2B700F349C9 /* PoiViewController.swift */; };
 		03C2DEB51E5094B500CFDA3E /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C2DEB41E5094B500CFDA3E /* AppDelegate.swift */; };
@@ -43,6 +44,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		032279F41E5EF22600C5F0E5 /* DataManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataManager.swift; sourceTree = "<group>"; };
 		03BA11711E59EB9100612489 /* PoiListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PoiListViewController.swift; sourceTree = "<group>"; };
 		03BAC0821E59E2B700F349C9 /* PoiViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PoiViewController.swift; sourceTree = "<group>"; };
 		03C2DEB11E5094B500CFDA3E /* poi-list-ios.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "poi-list-ios.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -122,6 +124,7 @@
 				03C2DEB91E5094B500CFDA3E /* MasterViewController.swift */,
 				03C2DEBB1E5094B500CFDA3E /* DetailViewController.swift */,
 				03FC38FB1E5DF4AE00093D5A /* EmailManager.swift */,
+				032279F41E5EF22600C5F0E5 /* DataManager.swift */,
 				03C2DEBD1E5094B500CFDA3E /* Main.storyboard */,
 				03C2DEC01E5094B500CFDA3E /* Assets.xcassets */,
 				03C2DEC21E5094B500CFDA3E /* LaunchScreen.storyboard */,
@@ -302,6 +305,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				03C2DEB81E5094B500CFDA3E /* poi_list_ios.xcdatamodeld in Sources */,
+				032279F51E5EF22600C5F0E5 /* DataManager.swift in Sources */,
 				03FC38FC1E5DF4AE00093D5A /* EmailManager.swift in Sources */,
 				03C2DEB51E5094B500CFDA3E /* AppDelegate.swift in Sources */,
 				03C2DEBA1E5094B500CFDA3E /* MasterViewController.swift in Sources */,

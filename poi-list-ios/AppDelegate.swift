@@ -10,10 +10,7 @@
 /*
  
  - add user location and decide how it should work. Zoom out once location is present, or do it manually with a button?
- - import of json data. Check name and timestamp at import and ask to overwrite if already exists.
  - write tests
- - how should it work on ipad?
- - decide on default data for lists and POIs
  
  */
 
@@ -24,6 +21,8 @@ import CoreData
 class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDelegate {
 
     var window: UIWindow?
+    var managedObjectContext: NSManagedObjectContext?
+    var importedPoiList: PoiList?
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
@@ -36,16 +35,57 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
         let masterNavigationController = splitViewController.viewControllers[0] as! UINavigationController
         let controller = masterNavigationController.topViewController as! MasterViewController
         controller.managedObjectContext = self.persistentContainer.viewContext
+        self.managedObjectContext = self.persistentContainer.viewContext
         return true
+    }
+    
+    func showActionLongpress(title: String) {
+        let alertController = UIAlertController(title: nil, message: "A list called \(title) with the same timestamp already exists.", preferredStyle: .actionSheet)
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel) { action in
+            self.importedPoiList = nil
+        }
+        alertController.addAction(cancelAction)
+        let OKAction = UIAlertAction(title: "Save Copy", style: .default) { action in
+            self.importedPoiList?.title += " copy"
+            self.importedPoiList?.timestamp = getTimestamp()
+            if let poiList = self.importedPoiList {
+                importPoiList(poiList: poiList, managedObjectContext: self.managedObjectContext)
+                self.importedPoiList = nil
+            }
+        }
+        alertController.addAction(OKAction)
+        let newSaveAction = UIAlertAction(title: "Overwrite", style: .destructive) { action in
+            if let poiList = self.importedPoiList {
+                deletePoiList(poiList: poiList, managedObjectContext: self.managedObjectContext)
+                importPoiList(poiList: poiList, managedObjectContext: self.managedObjectContext)
+                self.importedPoiList = nil
+            }
+        }
+        alertController.addAction(newSaveAction)
+        self.window?.rootViewController?.present(alertController, animated: true) {
+        }
+    }
+    
+    func importList(contents: String) {
+        if let data = contents.data(using: String.Encoding.utf8) {
+            if let moc = managedObjectContext {
+                if let poiList = parsePoiListJSON(data: data) {
+                    let exists = checkIfPoiListExists(poiList: poiList, managedObjectContext: moc)
+                    if(exists) {
+                        self.importedPoiList = poiList
+                        showActionLongpress(title:poiList.title)
+                    } else {
+                        importPoiList(poiList: poiList, managedObjectContext: moc)
+                    }
+                }
+            }
+        }
     }
     
     func application(_ app: UIApplication, open url: URL, options: [UIApplicationOpenURLOptionsKey : Any] = [:]) -> Bool {
         do {
             let contents = try String(contentsOf: url)
-            print("urldata:",contents)
-            
-            // todo: parse JSON
-            // check if name + timestamp already exists, in that case present yes/no overwrite dialog, else just add.
+            importList(contents:contents)
         } catch {
             // contents could not be loaded
         }
@@ -79,15 +119,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
     // MARK: - Split view
 
     func splitViewController(_ splitViewController: UISplitViewController, collapseSecondary secondaryViewController:UIViewController, onto primaryViewController:UIViewController) -> Bool {
-        /*
-        guard let secondaryAsNavController = secondaryViewController as? UINavigationController else { return false }
-        guard let topAsDetailController = secondaryAsNavController.topViewController as? DetailViewController else { return false }
-        */
-        
-        /*if topAsDetailController.detailItem == nil {
-            // Return true to indicate that we have handled the collapse by doing nothing; the secondary controller will be discarded.
-            return true
-        }*/
         return true
     }
     // MARK: - Core Data stack

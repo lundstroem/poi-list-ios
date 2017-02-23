@@ -51,43 +51,13 @@ class PoiListViewController: UIViewController {
     
     @IBAction func doneButtonPressed() {
         if let list = poiListModel {
-            saveObject(poiListModel: list)
+            saveList(poiListModel: list, title: titleView.text, info: infoView.text, managedObjectContext: self.managedObjectContext)
         } else {
-            insertNewObject();
+            if insertNewPoiListModel(title:titleView.text, info:infoView.text, timestamp:getTimestamp(), managedObjectContext: self.managedObjectContext) != nil {
+            }
         }
         exit()
         dismiss(animated: true, completion: nil)
-    }
-    
-    func saveObject(poiListModel: PoiListModel) {
-        if let moc = self.managedObjectContext {
-            poiListModel.title = titleView.text
-            poiListModel.info = infoView.text
-            do {
-                try moc.save()
-            } catch {
-                let nserror = error as NSError
-                print("Unresolved error \(nserror), \(nserror.userInfo)")
-            }
-        }
-    }
-    
-    
-    func insertNewObject() {
-        if let moc = self.managedObjectContext {
-            let timestamp_double:Double = NSDate().timeIntervalSince1970
-            let timestamp: String = "\(timestamp_double)"
-            let newPoiList = PoiListModel(context: moc)
-            newPoiList.timestamp = timestamp
-            newPoiList.title = titleView.text
-            newPoiList.info = infoView.text
-            do {
-                try moc.save()
-            } catch {
-                let nserror = error as NSError
-                print("Unresolved error \(nserror), \(nserror.userInfo)")
-            }
-        }
     }
     
     func exit() {
