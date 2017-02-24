@@ -6,6 +6,8 @@
 	<string>en</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>see your location on the map in relation to the POIs</string>
 	<key>CFBundleDocumentTypes</key>
 	<array>
 		<dict>

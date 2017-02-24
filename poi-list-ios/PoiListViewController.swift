@@ -51,7 +51,7 @@ class PoiListViewController: UIViewController {
     
     @IBAction func doneButtonPressed() {
         if let list = poiListModel {
-            saveList(poiListModel: list, title: titleView.text, info: infoView.text, managedObjectContext: self.managedObjectContext)
+            savePoiListModel(poiListModel: list, title: titleView.text, info: infoView.text, managedObjectContext: self.managedObjectContext)
         } else {
             if insertNewPoiListModel(title:titleView.text, info:infoView.text, timestamp:getTimestamp(), managedObjectContext: self.managedObjectContext) != nil {
             }

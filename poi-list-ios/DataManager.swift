@@ -170,6 +170,12 @@ func fetchPois(poiListModel: PoiListModel?, managedObjectContext: NSManagedObjec
     return emptyArray
 }
 
+func getTimestamp() -> String {
+    let timestamp_double:Double = NSDate().timeIntervalSince1970 * 1000
+    let timestamp: String = "\(timestamp_double)"
+    return timestamp
+}
+
 func checkIfPoiListExists(poiList: PoiList, managedObjectContext: NSManagedObjectContext?) -> Bool {
     let poiListFetch = NSFetchRequest<NSFetchRequestResult>(entityName: "PoiListModel")
     if let moc = managedObjectContext {
@@ -212,7 +218,25 @@ func importPoiList(poiList: PoiList, managedObjectContext: NSManagedObjectContex
     }
 }
 
-func saveList(poiListModel: PoiListModel, title: String?, info: String?, managedObjectContext: NSManagedObjectContext?) {
+func savePoiModel(poiModel: PoiModel?, title: String?, info: String?, managedObjectContext: NSManagedObjectContext?) {
+    if let poi = poiModel {
+        poi.title = title
+        poi.info = info
+        if(poi.title == nil || poi.title == "") {
+            poi.title = "title"
+        }
+        if let moc = managedObjectContext {
+            do {
+                try moc.save()
+            } catch {
+                let nserror = error as NSError
+                print("Unresolved error \(nserror), \(nserror.userInfo)")
+            }
+        }
+    }
+}
+
+func savePoiListModel(poiListModel: PoiListModel, title: String?, info: String?, managedObjectContext: NSManagedObjectContext?) {
     if let moc = managedObjectContext {
         poiListModel.title = title
         poiListModel.info = info
@@ -223,12 +247,6 @@ func saveList(poiListModel: PoiListModel, title: String?, info: String?, managed
             print("Unresolved error \(nserror), \(nserror.userInfo)")
         }
     }
-}
-
-func getTimestamp() -> String {
-    let timestamp_double:Double = NSDate().timeIntervalSince1970 * 1000
-    let timestamp: String = "\(timestamp_double)"
-    return timestamp
 }
 
 func insertNewPoiModel(title: String?, info: String?, lat: Double, long: Double, poiListModel: PoiListModel?, managedObjectContext: NSManagedObjectContext?) -> PoiModel? {
@@ -251,6 +269,7 @@ func insertNewPoiModel(title: String?, info: String?, lat: Double, long: Double,
     }
     return nil
 }
+
 func insertNewPoiListModel(title: String?, info: String?, timestamp: String, managedObjectContext: NSManagedObjectContext?) -> PoiListModel? {
     if let moc = managedObjectContext {
         let newPoiList = PoiListModel(context: moc)

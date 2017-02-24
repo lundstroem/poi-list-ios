@@ -14,48 +14,46 @@ class PoiViewController: UIViewController {
 
     @IBOutlet weak var titleView: UITextField!
     @IBOutlet weak var infoView: UITextView!
-    
+    @IBOutlet weak var toastView: UIView!
+    @IBOutlet weak var toastLabel: UILabel!
     var managedObjectContext: NSManagedObjectContext? = nil
     var poiModel: PoiModel? = nil
    
     override func viewDidLoad() {
         super.viewDidLoad()
-        let removeButton = UIBarButtonItem(barButtonSystemItem: .trash, target: self, action: #selector(deletePoi(_:)))
-        self.navigationItem.rightBarButtonItem = removeButton
+        let copyLinkButton = UIBarButtonItem(title: "link", style: .plain, target: self, action: #selector(copyLink(_:)))
+        self.navigationItem.rightBarButtonItem = copyLinkButton
         titleView.becomeFirstResponder()
     }
 
     func savePoi() {
-        if let poi = poiModel {
-            poi.title = self.titleView.text
-            poi.info = self.infoView.text
-            if(poi.title == nil || poi.title == "") {
-                poi.title = "title"
-            }
-            if let moc = managedObjectContext {
-                do {
-                    try moc.save()
-                } catch {
-                    let nserror = error as NSError
-                    print("Unresolved error \(nserror), \(nserror.userInfo)")
-                }
-            }
+        savePoiModel(poiModel: poiModel, title: self.titleView.text, info: self.infoView.text, managedObjectContext: managedObjectContext)
+    }
+    
+    func copyLink(_ sender: Any) {
+        if let model = poiModel {
+            let gmapsUrl = "http://maps.google.com/maps?q=\(model.lat),\(model.long)+(Point))&z=14&11=\(model.lat),\(model.long)"
+            UIPasteboard.general.string = gmapsUrl
+            showToast(text: "google maps link copied to clipboard")
         }
     }
     
-    func deletePoi(_ sender: Any) {
-        if let poi = poiModel {
-            if let moc = managedObjectContext {
-                moc.delete(poi)
-                do {
-                    try moc.save()
-                } catch {
-                    let nserror = error as NSError
-                    print("Unresolved error \(nserror), \(nserror.userInfo)")
-                }
-                if let navController = self.navigationController {
-                    navController.popViewController(animated: true)
-                }
+    func showToast(text: String) {
+        if let view = toastView {
+            UIView.animate(withDuration: 0.5, animations: {
+                view.frame = CGRect(x:view.frame.origin.x, y:view.frame.origin.y+60, width:view.frame.width, height:view.frame.height)
+            }, completion: { (finished: Bool) in
+                UIView.animate(withDuration: 2.0, animations: {
+                    view.frame = CGRect(x:view.frame.origin.x, y:view.frame.origin.y-1, width:view.frame.width, height:view.frame.height)
+                }, completion: { (finished: Bool) in
+                    UIView.animate(withDuration: 0.5, animations: {
+                        view.frame = CGRect(x:view.frame.origin.x, y:view.frame.origin.y-60, width:view.frame.width, height:view.frame.height)
+                    }, completion: { (finished: Bool) in
+                    })
+                })
+            })
+            if let label = toastLabel {
+                label.text = text
             }
         }
     }

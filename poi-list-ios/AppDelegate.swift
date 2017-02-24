@@ -8,10 +8,7 @@
 
 
 /*
- 
- - add user location and decide how it should work. Zoom out once location is present, or do it manually with a button?
  - write tests
- 
  */
 
 import UIKit
@@ -25,14 +22,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
     var importedPoiList: PoiList?
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
-        // Override point for customization after application launch.
-        
-        let splitViewController = self.window!.rootViewController as! UISplitViewController
-        let navigationController = splitViewController.viewControllers[splitViewController.viewControllers.count-1] as! UINavigationController
-        navigationController.topViewController!.navigationItem.leftBarButtonItem = splitViewController.displayModeButtonItem
-        splitViewController.delegate = self
-
-        let masterNavigationController = splitViewController.viewControllers[0] as! UINavigationController
+        let masterNavigationController = self.window?.rootViewController as! UINavigationController
         let controller = masterNavigationController.topViewController as! MasterViewController
         controller.managedObjectContext = self.persistentContainer.viewContext
         self.managedObjectContext = self.persistentContainer.viewContext
@@ -66,7 +56,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
         }
     }
     
-    func importList(contents: String) {
+    func importListFromData(contents: String) {
         if let data = contents.data(using: String.Encoding.utf8) {
             if let moc = managedObjectContext {
                 if let poiList = parsePoiListJSON(data: data) {
@@ -85,7 +75,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
     func application(_ app: UIApplication, open url: URL, options: [UIApplicationOpenURLOptionsKey : Any] = [:]) -> Bool {
         do {
             let contents = try String(contentsOf: url)
-            importList(contents:contents)
+            importListFromData(contents:contents)
         } catch {
             // contents could not be loaded
         }

@@ -19,25 +19,18 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         self.navigationItem.leftBarButtonItem = self.editButtonItem
         let addButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(presentAddModal(_:)))
         self.navigationItem.rightBarButtonItem = addButton
-        if let split = self.splitViewController {
-            let controllers = split.viewControllers
-            self.detailViewController = (controllers[controllers.count-1] as! UINavigationController).topViewController as? DetailViewController
-        }
     }
 
     override func viewWillAppear(_ animated: Bool) {
-        self.clearsSelectionOnViewWillAppear = self.splitViewController!.isCollapsed
         super.viewWillAppear(animated)
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
     }
 
     func presentAddModal(_ sender: Any) {
         let modalViewController = self.storyboard?.instantiateViewController(withIdentifier: "PoiListViewController") as! PoiListViewController
-        
         modalViewController.modalPresentationStyle = .popover
         modalViewController.managedObjectContext = self.fetchedResultsController.managedObjectContext
         present(modalViewController, animated: true, completion: { () -> Void   in
@@ -51,7 +44,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         if segue.identifier == "showDetail" {
             if let indexPath = self.tableView.indexPathForSelectedRow {
             let object = self.fetchedResultsController.object(at: indexPath)
-                let controller = (segue.destination as! UINavigationController).topViewController as! DetailViewController
+                let controller = segue.destination as! DetailViewController
                 controller.managedObjectContext = self.fetchedResultsController.managedObjectContext
                 controller.poiListModel = object
                 controller.navigationItem.leftBarButtonItem = self.splitViewController?.displayModeButtonItem

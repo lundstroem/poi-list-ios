@@ -11,7 +11,7 @@ import MapKit
 import CoreData
 
 
-class DetailViewController: UIViewController, MKMapViewDelegate {
+class DetailViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDelegate {
 
     // associate a PoiModel with a Pin
     class PoiModelPin {
@@ -24,18 +24,24 @@ class DetailViewController: UIViewController, MKMapViewDelegate {
     }
     
     @IBOutlet weak var mapView: MKMapView!
+    @IBOutlet weak var xLabel: UILabel!
     var pinsArray: [PoiModelPin] = []
     var managedObjectContext: NSManagedObjectContext? = nil
     var poiListModel: PoiListModel? = nil
     var emailManager: EmailManager?
+    let locationManager = CLLocationManager()
+    var alertShowing: Bool = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
         definesPresentationContext = true
         emailManager = EmailManager()
+        locationManager.delegate = self
+        xLabel.isHidden = true
     }
     
     override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
         if(mapView != nil) {
             // todo: need to make sure we don't remove user location if present.
             pinsArray.removeAll()
@@ -48,6 +54,17 @@ class DetailViewController: UIViewController, MKMapViewDelegate {
         addPinsToMap(poiModels: pois)
         let longPressGesture = UILongPressGestureRecognizer(target: self, action: #selector(mapViewLongpressed))
         mapView.addGestureRecognizer(longPressGesture)
+        mapView.showsUserLocation = true
+        locationManager.requestWhenInUseAuthorization()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        if CLLocationManager.authorizationStatus() == .authorizedWhenInUse {
+            mapView.showsUserLocation = true
+        } else {
+            CLLocationManager().requestWhenInUseAuthorization()
+        }
     }
     
     @IBAction func presentEditModal(_ sender: Any) {
@@ -93,14 +110,14 @@ class DetailViewController: UIViewController, MKMapViewDelegate {
 
     func addLocation(poiModel: PoiModel) {
         let location = CLLocationCoordinate2DMake(poiModel.lat, poiModel.long)
-        let dropPin = MKPointAnnotation()
-        dropPin.coordinate = location
-        dropPin.title = poiModel.title
-        dropPin.subtitle = poiModel.info
-        let poiPin = PoiModelPin(poiModel:poiModel, pin:dropPin)
+        let pin = MKPointAnnotation()
+        pin.coordinate = location
+        pin.title = poiModel.title
+        pin.subtitle = poiModel.info
+        let poiPin = PoiModelPin(poiModel:poiModel, pin:pin)
         pinsArray.append(poiPin)
         if(mapView != nil) {
-            mapView.addAnnotation(dropPin)
+            mapView.addAnnotation(pin)
         }
     }
     
@@ -110,11 +127,34 @@ class DetailViewController: UIViewController, MKMapViewDelegate {
     
     func savePoiModelForAnnotation(pin: MKAnnotation) {
         if let poiModel = getModelForPin(pin:pin) {
+            poiModel.lat = pin.coordinate.latitude
+            poiModel.long = pin.coordinate.longitude
+            poiModel.title = pin.title!
+            poiModel.info = pin.subtitle!
             if let moc = self.managedObjectContext {
-                poiModel.lat = pin.coordinate.latitude
-                poiModel.long = pin.coordinate.longitude
-                poiModel.title = pin.title!
-                poiModel.info = pin.subtitle!
+                do {
+                    try moc.save()
+                } catch {
+                    let nserror = error as NSError
+                    print("Unresolved error \(nserror), \(nserror.userInfo)")
+                }
+            }
+        }
+    }
+    
+    func deletePoiModelForAnnotation(pin: MKAnnotation) {
+        if let poiModel = getModelForPin(pin:pin) {
+            var index = 0
+            for poiModelPin in pinsArray  {
+                if(poiModelPin.pin === pin) {
+                    self.mapView.removeAnnotation(pin)
+                    pinsArray.remove(at: index)
+                    break
+                }
+                index+=1
+            }
+            if let moc = self.managedObjectContext {
+                moc.delete(poiModel)
                 do {
                     try moc.save()
                 } catch {
@@ -137,18 +177,23 @@ class DetailViewController: UIViewController, MKMapViewDelegate {
     func mapViewLongpressed(gestureRecognizer: UIGestureRecognizer) {
         let touchPoint = gestureRecognizer.location(in: mapView)
         let coordinate = mapView.convert(touchPoint, toCoordinateFrom: mapView)
-        showActionLongpress(location:coordinate)
+        if(!alertShowing) {
+            alertShowing = true;
+            showActionLongpress(location:coordinate)
+        }
     }
     
     func showActionLongpress(location: CLLocationCoordinate2D) {
         let alertController = UIAlertController(title: nil, message: "Add pin?", preferredStyle: .actionSheet)
         let cancelAction = UIAlertAction(title: "Cancel", style: .cancel) { action in
+            self.alertShowing = false;
         }
         alertController.addAction(cancelAction)
         let OKAction = UIAlertAction(title: "OK", style: .default) { action in
             if let poiModel = self.addNewPoiModel(lat: location.latitude, long: location.longitude, title: "title", info: "info") {
                 self.addLocation(poiModel: poiModel)
             }
+            self.alertShowing = false;
         }
         alertController.addAction(OKAction)
         self.present(alertController, animated: true) {
@@ -179,7 +224,10 @@ class DetailViewController: UIViewController, MKMapViewDelegate {
     func mapView(_ mapView: MKMapView, didUpdate userLocation: MKUserLocation) {}
     func mapView(_ mapView: MKMapView, didFailToLocateUserWithError error: Error) {}
     func mapView(_ mapView: MKMapView, didChange mode: MKUserTrackingMode, animated: Bool) {}
-    
+    private func locationManager(manager: CLLocationManager, didChangeAuthorizationStatus status: CLAuthorizationStatus) {
+        guard status == .authorizedWhenInUse else { print("not enabled"); return }
+        mapView.showsUserLocation = true
+    }
     // Managing Annotation Views
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
         if annotation is MKUserLocation {
@@ -217,8 +265,19 @@ class DetailViewController: UIViewController, MKMapViewDelegate {
                  didChange newState: MKAnnotationViewDragState,
                  fromOldState oldState: MKAnnotationViewDragState) {
         switch newState {
+        case .starting:
+            xLabel.isHidden = false
         case .ending, .canceling:
-            savePoiModelForAnnotation(pin:view.annotation!)
+            if let globalPoint = view.superview?.convert(view.frame.origin, to: nil) {
+                if(globalPoint.x < 100 && globalPoint.y < 100) {
+                    DispatchQueue.main.async {
+                        self.deletePoiModelForAnnotation(pin:view.annotation!)
+                    }
+                } else {
+                    savePoiModelForAnnotation(pin:view.annotation!)
+                }
+                xLabel.isHidden = true
+            }
         default: break
         }
     }
