@@ -24,6 +24,7 @@
 		03FC39031E5E109F00093D5A /* file_icon_320x320.png in Resources */ = {isa = PBXBuildFile; fileRef = 03FC38FF1E5E109F00093D5A /* file_icon_320x320.png */; };
 		03FC39041E5E109F00093D5A /* file_icon_44x58.png in Resources */ = {isa = PBXBuildFile; fileRef = 03FC39001E5E109F00093D5A /* file_icon_44x58.png */; };
 		03FC39051E5E109F00093D5A /* file_icon_64x64.png in Resources */ = {isa = PBXBuildFile; fileRef = 03FC39011E5E109F00093D5A /* file_icon_64x64.png */; };
+		2B52FD281E8523680038C641 /* TestHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B52FD271E8523680038C641 /* TestHelper.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -67,6 +68,7 @@
 		03FC38FF1E5E109F00093D5A /* file_icon_320x320.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = file_icon_320x320.png; sourceTree = "<group>"; };
 		03FC39001E5E109F00093D5A /* file_icon_44x58.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = file_icon_44x58.png; sourceTree = "<group>"; };
 		03FC39011E5E109F00093D5A /* file_icon_64x64.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = file_icon_64x64.png; sourceTree = "<group>"; };
+		2B52FD271E8523680038C641 /* TestHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestHelper.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -130,6 +132,7 @@
 				03C2DEC21E5094B500CFDA3E /* LaunchScreen.storyboard */,
 				03C2DEC51E5094B500CFDA3E /* Info.plist */,
 				03C2DEB61E5094B500CFDA3E /* poi_list_ios.xcdatamodeld */,
+				2B52FD271E8523680038C641 /* TestHelper.swift */,
 			);
 			path = "poi-list-ios";
 			sourceTree = "<group>";
@@ -310,6 +313,7 @@
 				03C2DEB51E5094B500CFDA3E /* AppDelegate.swift in Sources */,
 				03C2DEBA1E5094B500CFDA3E /* MasterViewController.swift in Sources */,
 				03BAC0841E59E2B700F349C9 /* PoiViewController.swift in Sources */,
+				2B52FD281E8523680038C641 /* TestHelper.swift in Sources */,
 				03BA11721E59EB9100612489 /* PoiListViewController.swift in Sources */,
 				03C2DEBC1E5094B500CFDA3E /* DetailViewController.swift in Sources */,
 			);

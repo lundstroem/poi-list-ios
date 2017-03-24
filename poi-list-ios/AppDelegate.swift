@@ -6,11 +6,6 @@
 //  Copyright © 2017 Harry Lundström. All rights reserved.
 //
 
-
-/*
- - write tests
- */
-
 import UIKit
 import CoreData
 

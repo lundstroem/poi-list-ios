@@ -186,25 +186,55 @@ func checkIfPoiListExists(poiList: PoiList, managedObjectContext: NSManagedObjec
                 return true
             }
         } catch {
-            print("Failed to fetch PoiList: \(error)")
+            print("Failed to check if PoiList exists: \(error)")
         }
     }
-    return false;
+    return false
 }
 
-func deletePoiList(poiList: PoiList, managedObjectContext: NSManagedObjectContext?) {
+@discardableResult func deletePoiList(poiList: PoiList, managedObjectContext: NSManagedObjectContext?) -> Bool {
     let poiListFetch = NSFetchRequest<NSFetchRequestResult>(entityName: "PoiListModel")
     if let moc = managedObjectContext {
         poiListFetch.predicate = NSPredicate(format: "timestamp == %@", poiList.timestamp)
         do {
             let poiListsFetched = try moc.fetch(poiListFetch) as! [PoiListModel]
             if(poiListsFetched.count > 0) {
-                moc.delete(poiListsFetched[0])
+                deletePoiListModel(poiListModel: poiListsFetched[0], managedObjectContext: managedObjectContext)
             }
         } catch {
-            print("Failed to fetch PoiList: \(error)")
+            print("Failed to delete PoiList: \(error)")
+            return false
         }
     }
+    return true
+}
+
+@discardableResult func deletePoiListModel(poiListModel: PoiListModel, managedObjectContext: NSManagedObjectContext?) -> Bool {
+    if let moc = managedObjectContext {
+        moc.delete(poiListModel)
+        do {
+            try moc.save()
+        } catch {
+            let nserror = error as NSError
+            print("Unresolved error \(nserror), \(nserror.userInfo)")
+            return false
+        }
+    }
+    return true
+}
+
+@discardableResult func deletePoiModel(poiModel: PoiModel, managedObjectContext: NSManagedObjectContext?) -> Bool {
+    if let moc = managedObjectContext {
+        moc.delete(poiModel)
+        do {
+            try moc.save()
+        } catch {
+            let nserror = error as NSError
+            print("Unresolved error \(nserror), \(nserror.userInfo)")
+            return false
+        }
+    }
+    return true
 }
 
 func importPoiList(poiList: PoiList, managedObjectContext: NSManagedObjectContext?) {
@@ -218,10 +248,16 @@ func importPoiList(poiList: PoiList, managedObjectContext: NSManagedObjectContex
     }
 }
 
-func savePoiModel(poiModel: PoiModel?, title: String?, info: String?, managedObjectContext: NSManagedObjectContext?) {
+func savePoiModel(poiModel: PoiModel?, title: String?, info: String?, lat: Double?, long: Double?, managedObjectContext: NSManagedObjectContext?) {
     if let poi = poiModel {
         poi.title = title
         poi.info = info
+        if let latitude = lat {
+            poi.lat = latitude
+        }
+        if let longitude = long {
+            poi.long = longitude
+        }
         if(poi.title == nil || poi.title == "") {
             poi.title = "title"
         }

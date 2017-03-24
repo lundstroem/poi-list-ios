@@ -32,11 +32,118 @@ class poi_list_iosUITests: XCTestCase {
     func testCreateAndRemovePoiList() {
         // Use recording to get started writing UI tests.
         // Use XCTAssert and related functions to verify your tests produce the correct results.
+    
+        // create
+        let app = XCUIApplication()
+        let poiListNavigationBar = app.navigationBars["POI List"]
+        poiListNavigationBar.buttons["Add"].tap()
+        app.textFields["title"].typeText("poi-list-title")
+        let textView = app.children(matching: .window).element(boundBy: 0).children(matching: .other).element.children(matching: .other).element.children(matching: .textView).element
+        textView.tap()
+        textView.typeText("poi-list-description")
+        app.navigationBars["Title"].buttons["Done"].tap()
         
-       
-        
+        // remove
+        poiListNavigationBar.buttons["Edit"].tap()
+        let tablesQuery = app.tables
+        tablesQuery.buttons["Delete poi-list-title"].tap()
+        tablesQuery.buttons["Delete"].tap()
     }
     
+    func testAddAndEditPin() {
+        
+        // create
+        let app = XCUIApplication()
+        let poiListNavigationBar = app.navigationBars["POI List"]
+        poiListNavigationBar.buttons["Add"].tap()
+        app.textFields["title"].typeText("poi-list-title")
+        let textView = app.children(matching: .window).element(boundBy: 0).children(matching: .other).element.children(matching: .other).element.children(matching: .textView).element
+        textView.tap()
+        textView.typeText("poi-list-description")
+        app.navigationBars["Title"].buttons["Done"].tap()
+        
+        // go to detailview
+        app.tables.children(matching: .cell).element(boundBy: 0).tap()
+        
+        /*
+        app.alerts["Allow “poi-list-ios” to access your location while you use the app?"].buttons["Allow"].tap()
+        */
+        
+        // add pin
+        let map = app.otherElements.containing(.navigationBar, identifier:"poi-list-title").children(matching: .other).element.children(matching: .other).element.children(matching: .other).element.children(matching: .other).element.children(matching: .other).element.children(matching: .map).element
+        map.press(forDuration:2.0)
+        app.sheets.buttons["OK"].tap()
+        
+        // edit pin
+        app.otherElements["title, info"].tap()
+        app.buttons["More Info"].tap()
+        app.textFields.containing(.button, identifier:"Clear text").element.typeText("y")
+        
+        let textView2 = app.otherElements.containing(.navigationBar, identifier:"root").children(matching: .other).element.children(matching: .other).element.children(matching: .other).element.children(matching: .textView).element
+        textView2.tap()
+        textView2.typeText("y")
+        app.navigationBars["root"].buttons["poi-list-title"].tap()
+        
+        // check if title and info has been updated
+        app.otherElements["titley, yinfo"].tap()
+        
+        // go back
+        app.navigationBars["poi-list-title"].buttons["POI List"].tap()
+
+        // remove list
+        poiListNavigationBar.buttons["Edit"].tap()
+        let tablesQuery = app.tables
+        tablesQuery.buttons["Delete poi-list-title"].tap()
+        tablesQuery.buttons["Delete"].tap()
+    }
     
-    
+    func testEditPoiList() {
+        
+        // create
+        let app = XCUIApplication()
+        let poiListNavigationBar = app.navigationBars["POI List"]
+        poiListNavigationBar.buttons["Add"].tap()
+        app.textFields["title"].typeText("poi-list-title")
+        let textView = app.children(matching: .window).element(boundBy: 0).children(matching: .other).element.children(matching: .other).element.children(matching: .textView).element
+        textView.tap()
+        textView.typeText("poi-list-description")
+        app.navigationBars["Title"].buttons["Done"].tap()
+        
+        // go to detailview
+        app.tables.children(matching: .cell).element(boundBy: 0).tap()
+                
+        // edit poi list data
+        let editButton = app.toolbars.buttons["Edit"]
+        editButton.tap()
+        let moreKey = app.keys["more"]
+        moreKey.tap()
+        moreKey.tap()
+        let titleTextField = app.textFields["title"]
+        titleTextField.typeText("2")
+        let textView3 = app.children(matching: .window).element(boundBy: 0).children(matching: .other).element.children(matching: .other).element.children(matching: .textView).element
+        textView3.tap()
+        moreKey.tap()
+        moreKey.tap()
+        textView3.typeText("2")
+        let listNavigationBar = app.navigationBars["poi-list-title"]
+        listNavigationBar.buttons["Cancel"].tap()
+        editButton.tap()
+        moreKey.tap()
+        moreKey.tap()
+        titleTextField.typeText("2")
+        textView.tap()
+        moreKey.tap()
+        moreKey.tap()
+        textView.typeText("2")
+        listNavigationBar.buttons["Done"].tap()
+        
+        // go back
+        app.navigationBars["poi-list-title2"].buttons["POI List"].tap()
+        
+        // remove list
+        poiListNavigationBar.buttons["Edit"].tap()
+        let tablesQuery = app.tables
+        tablesQuery.buttons["Delete poi-list-title2"].tap()
+        tablesQuery.buttons["Delete"].tap()
+    }
 }

@@ -27,7 +27,7 @@ class PoiViewController: UIViewController {
     }
 
     func savePoi() {
-        savePoiModel(poiModel: poiModel, title: self.titleView.text, info: self.infoView.text, managedObjectContext: managedObjectContext)
+        savePoiModel(poiModel: poiModel, title: self.titleView.text, info: self.infoView.text, lat:nil, long:nil, managedObjectContext: managedObjectContext)
     }
     
     func copyLink(_ sender: Any) {
