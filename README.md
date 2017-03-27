@@ -6,8 +6,7 @@
 - Existing POIs can be moved on the map.
 - POI collections can be shared and imported by e-mail.
 ## todo:
-- Add autolayout constraints to UI elements to better support different resolutions.
-- Increase automated test coverage.
+- Increase automated test coverage (refactor code to be more testable).
 - Simplify CoreData <-> JSON conversion.
 - Graphic design.
 
