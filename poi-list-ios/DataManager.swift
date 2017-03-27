@@ -241,8 +241,7 @@ func importPoiList(poiList: PoiList, managedObjectContext: NSManagedObjectContex
     if let moc = managedObjectContext {
         if let poiListModel = insertNewPoiListModel(title: poiList.title, info: poiList.info, timestamp: poiList.timestamp, managedObjectContext: moc) {
             for poi in poiList.pois as! [Poi] {
-                if insertNewPoiModel(title: poi.title, info: poi.info, lat: poi.lat, long: poi.long, poiListModel: poiListModel, managedObjectContext: moc) != nil {
-                }
+                insertNewPoiModel(title: poi.title, info: poi.info, lat: poi.lat, long: poi.long, poiListModel: poiListModel, managedObjectContext: moc)
             }
         }
     }
@@ -285,7 +284,7 @@ func savePoiListModel(poiListModel: PoiListModel, title: String?, info: String?,
     }
 }
 
-func insertNewPoiModel(title: String?, info: String?, lat: Double, long: Double, poiListModel: PoiListModel?, managedObjectContext: NSManagedObjectContext?) -> PoiModel? {
+@discardableResult func insertNewPoiModel(title: String?, info: String?, lat: Double, long: Double, poiListModel: PoiListModel?, managedObjectContext: NSManagedObjectContext?) -> PoiModel? {
     if let moc = managedObjectContext {
         if let poiList = poiListModel {
             let newPoi = PoiModel(context: moc)

@@ -60,9 +60,8 @@
                                     </barButtonItem>
                                 </items>
                             </toolbar>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="X" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fXX-ys-eQU">
-                                <rect key="frame" x="0.0" y="64" width="86" height="86"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="X" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fXX-ys-eQU">
+                                <rect key="frame" x="32" y="93.666666666666686" width="38" height="70.333333333333314"/>
                                 <edgeInsets key="layoutMargins" top="8" left="8" bottom="8" right="8"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="59"/>
                                 <color key="textColor" red="0.71441426701570676" green="0.12126396374682007" blue="0.15291542061307337" alpha="1" colorSpace="calibratedRGB"/>
@@ -72,12 +71,14 @@
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstItem="ekM-TU-Z4T" firstAttribute="centerX" secondItem="svH-Pt-448" secondAttribute="centerX" id="1ag-fd-t5O"/>
+                            <constraint firstItem="PiE-iI-Fca" firstAttribute="leading" secondItem="fXX-ys-eQU" secondAttribute="trailing" constant="-70" id="6sk-9q-3Xs"/>
                             <constraint firstItem="PiE-iI-Fca" firstAttribute="leading" secondItem="svH-Pt-448" secondAttribute="leading" id="83P-Cr-grv"/>
                             <constraint firstItem="GAO-Cl-Wes" firstAttribute="top" secondItem="ekM-TU-Z4T" secondAttribute="bottom" id="8rg-O0-thV"/>
                             <constraint firstItem="ekM-TU-Z4T" firstAttribute="leading" secondItem="svH-Pt-448" secondAttribute="leading" id="BgA-RB-asZ"/>
                             <constraint firstItem="ekM-TU-Z4T" firstAttribute="top" secondItem="PiE-iI-Fca" secondAttribute="bottom" id="Cg4-sH-gvP"/>
                             <constraint firstItem="PiE-iI-Fca" firstAttribute="centerX" secondItem="svH-Pt-448" secondAttribute="centerX" id="HW1-F9-kbi"/>
                             <constraint firstAttribute="trailing" secondItem="PiE-iI-Fca" secondAttribute="trailing" id="I2x-eD-iXO"/>
+                            <constraint firstItem="PiE-iI-Fca" firstAttribute="top" secondItem="fXX-ys-eQU" secondAttribute="bottom" constant="-100" id="TLn-Al-QCh"/>
                             <constraint firstItem="PiE-iI-Fca" firstAttribute="top" secondItem="SYR-Wa-9uf" secondAttribute="bottom" id="zP7-r9-7ux"/>
                         </constraints>
                     </view>

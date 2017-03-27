@@ -55,6 +55,7 @@ class PoiViewController: UIViewController {
                             view.frame = CGRect(x:view.frame.origin.x, y:view.frame.origin.y-85, width:view.frame.width, height:view.frame.height)
                         }, completion: { (finished: Bool) in
                             self.toastFinished = true
+                            self.toastView.isHidden = true
                         })
                     })
                 })
