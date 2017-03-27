@@ -66,6 +66,7 @@ class poi_list_iosUITests: XCTestCase {
         app.tables.children(matching: .cell).element(boundBy: 0).tap()
         
         /*
+         // if on a fresh install, this dialog needs to be dismissed or the test will fail.
         app.alerts["Allow “poi-list-ios” to access your location while you use the app?"].buttons["Allow"].tap()
         */
         
