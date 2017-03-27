@@ -18,11 +18,13 @@ class PoiViewController: UIViewController {
     @IBOutlet weak var toastLabel: UILabel!
     var managedObjectContext: NSManagedObjectContext? = nil
     var poiModel: PoiModel? = nil
+    var toastFinished : Bool = true
    
     override func viewDidLoad() {
         super.viewDidLoad()
         let copyLinkButton = UIBarButtonItem(title: "link", style: .plain, target: self, action: #selector(copyLink(_:)))
         self.navigationItem.rightBarButtonItem = copyLinkButton
+        self.toastView.isHidden = true
         titleView.becomeFirstResponder()
     }
 
@@ -39,21 +41,26 @@ class PoiViewController: UIViewController {
     }
     
     func showToast(text: String) {
-        if let view = toastView {
-            UIView.animate(withDuration: 0.5, animations: {
-                view.frame = CGRect(x:view.frame.origin.x, y:view.frame.origin.y+60, width:view.frame.width, height:view.frame.height)
-            }, completion: { (finished: Bool) in
-                UIView.animate(withDuration: 2.0, animations: {
-                    view.frame = CGRect(x:view.frame.origin.x, y:view.frame.origin.y-1, width:view.frame.width, height:view.frame.height)
+        if(toastFinished) {
+            toastFinished = false
+            toastView.isHidden = false
+            if let view = toastView {
+                UIView.animate(withDuration: 0.5, animations: {
+                    view.frame = CGRect(x:view.frame.origin.x, y:view.frame.origin.y+85, width:view.frame.width, height:view.frame.height)
                 }, completion: { (finished: Bool) in
-                    UIView.animate(withDuration: 0.5, animations: {
-                        view.frame = CGRect(x:view.frame.origin.x, y:view.frame.origin.y-60, width:view.frame.width, height:view.frame.height)
+                    UIView.animate(withDuration: 2.0, animations: {
+                        view.frame = CGRect(x:view.frame.origin.x, y:view.frame.origin.y-1, width:view.frame.width, height:view.frame.height)
                     }, completion: { (finished: Bool) in
+                        UIView.animate(withDuration: 0.5, animations: {
+                            view.frame = CGRect(x:view.frame.origin.x, y:view.frame.origin.y-85, width:view.frame.width, height:view.frame.height)
+                        }, completion: { (finished: Bool) in
+                            self.toastFinished = true
+                        })
                     })
                 })
-            })
-            if let label = toastLabel {
-                label.text = text
+                if let label = toastLabel {
+                    label.text = text
+                }
             }
         }
     }
