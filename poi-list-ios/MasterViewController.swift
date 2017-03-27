@@ -11,8 +11,8 @@ import CoreData
 
 class MasterViewController: UITableViewController, NSFetchedResultsControllerDelegate {
 
-    var detailViewController: DetailViewController? = nil
-    var managedObjectContext: NSManagedObjectContext? = nil
+    var detailViewController: DetailViewController?
+    var managedObjectContext: NSManagedObjectContext?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -116,7 +116,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         }
         return _fetchedResultsController!
     }    
-    var _fetchedResultsController: NSFetchedResultsController<PoiListModel>? = nil
+    var _fetchedResultsController: NSFetchedResultsController<PoiListModel>?
 
     func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
         self.tableView.beginUpdates()

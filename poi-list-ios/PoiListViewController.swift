@@ -15,8 +15,8 @@ class PoiListViewController: UIViewController {
     @IBOutlet weak var titleView: UITextField!
     @IBOutlet weak var infoView: UITextView!
     @IBOutlet weak var navItem: UINavigationItem!
-    var managedObjectContext: NSManagedObjectContext? = nil
-    var poiListModel: PoiListModel? = nil
+    var managedObjectContext: NSManagedObjectContext?
+    var poiListModel: PoiListModel?
     
     override func viewDidLoad() {
         super.viewDidLoad()

@@ -26,8 +26,8 @@ class DetailViewController: UIViewController, MKMapViewDelegate, CLLocationManag
     @IBOutlet weak var mapView: MKMapView!
     @IBOutlet weak var xLabel: UILabel!
     var pinsArray: [PoiModelPin] = []
-    var managedObjectContext: NSManagedObjectContext? = nil
-    var poiListModel: PoiListModel? = nil
+    var managedObjectContext: NSManagedObjectContext?
+    var poiListModel: PoiListModel?
     var emailManager: EmailManager?
     let locationManager = CLLocationManager()
     var alertShowing: Bool = false
@@ -39,7 +39,7 @@ class DetailViewController: UIViewController, MKMapViewDelegate, CLLocationManag
         emailManager = EmailManager()
         locationManager.delegate = self
         xLabel.isHidden = true
-        initialZoom = false;
+        initialZoom = false
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -209,14 +209,17 @@ class DetailViewController: UIViewController, MKMapViewDelegate, CLLocationManag
     func mapViewDidStopLocatingUser(_ mapView: MKMapView) {}
     func mapView(_ mapView: MKMapView, didUpdate userLocation: MKUserLocation) {
         if(!initialZoom) {
-            initialZoom = true;
+            initialZoom = true
             zoomMap()
         }
     }
     func mapView(_ mapView: MKMapView, didFailToLocateUserWithError error: Error) {}
     func mapView(_ mapView: MKMapView, didChange mode: MKUserTrackingMode, animated: Bool) {}
     private func locationManager(manager: CLLocationManager, didChangeAuthorizationStatus status: CLAuthorizationStatus) {
-        guard status == .authorizedWhenInUse else { print("not enabled"); return }
+        guard status == .authorizedWhenInUse else {
+                print("location not enabled")
+            return
+        }
         mapView.showsUserLocation = true
     }
     // Managing Annotation Views

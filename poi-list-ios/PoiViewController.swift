@@ -16,8 +16,8 @@ class PoiViewController: UIViewController {
     @IBOutlet weak var infoView: UITextView!
     @IBOutlet weak var toastView: UIView!
     @IBOutlet weak var toastLabel: UILabel!
-    var managedObjectContext: NSManagedObjectContext? = nil
-    var poiModel: PoiModel? = nil
+    var managedObjectContext: NSManagedObjectContext?
+    var poiModel: PoiModel?
     var toastFinished : Bool = true
    
     override func viewDidLoad() {
