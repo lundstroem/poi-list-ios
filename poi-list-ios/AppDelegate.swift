@@ -14,65 +14,50 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
 
     var window: UIWindow?
     var managedObjectContext: NSManagedObjectContext?
-    var importedPoiList: PoiList?
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         let masterNavigationController = self.window?.rootViewController as! UINavigationController
         let controller = masterNavigationController.topViewController as! MasterViewController
         controller.managedObjectContext = self.persistentContainer.viewContext
         self.managedObjectContext = self.persistentContainer.viewContext
+        if ProcessInfo.processInfo.arguments.contains("UITEST") {
+            print("UITEST running")
+            self.managedObjectContext = setUpInMemoryManagedObjectContext()
+            controller.managedObjectContext = self.managedObjectContext
+        }
         return true
     }
     
     func showActionLongpress(title: String) {
         let alertController = UIAlertController(title: nil, message: "A list called \(title) with the same timestamp already exists.", preferredStyle: .actionSheet)
         let cancelAction = UIAlertAction(title: "Cancel", style: .cancel) { action in
-            self.importedPoiList = nil
+            importActionCancel()
         }
         alertController.addAction(cancelAction)
         let OKAction = UIAlertAction(title: "Save Copy", style: .default) { action in
-            self.importedPoiList?.title += " copy"
-            self.importedPoiList?.timestamp = getTimestamp()
-            if let poiList = self.importedPoiList {
-                importPoiList(poiList: poiList, managedObjectContext: self.managedObjectContext)
-                self.importedPoiList = nil
-            }
+            importActionSaveCopy(managedObjectContext: self.managedObjectContext)
         }
         alertController.addAction(OKAction)
         let newSaveAction = UIAlertAction(title: "Overwrite", style: .destructive) { action in
-            if let poiList = self.importedPoiList {
-                deletePoiList(poiList: poiList, managedObjectContext: self.managedObjectContext)
-                importPoiList(poiList: poiList, managedObjectContext: self.managedObjectContext)
-                self.importedPoiList = nil
-            }
+            importActionOverwrite(managedObjectContext: self.managedObjectContext)
         }
         alertController.addAction(newSaveAction)
         self.window?.rootViewController?.present(alertController, animated: true) {
         }
     }
     
-    func importListFromData(contents: String) {
-        if let data = contents.data(using: String.Encoding.utf8) {
-            if let moc = managedObjectContext {
-                if let poiList = parsePoiListJSON(data: data) {
-                    let exists = checkIfPoiListExists(poiList: poiList, managedObjectContext: moc)
-                    if(exists) {
-                        self.importedPoiList = poiList
-                        showActionLongpress(title:poiList.title)
-                    } else {
-                        importPoiList(poiList: poiList, managedObjectContext: moc)
-                    }
-                }
-            }
-        }
-    }
-    
     func application(_ app: UIApplication, open url: URL, options: [UIApplicationOpenURLOptionsKey : Any] = [:]) -> Bool {
-        do {
-            let contents = try String(contentsOf: url)
-            importListFromData(contents:contents)
-        } catch {
-            // contents could not be loaded
+        if let contents = getStringContentResource(url:url) {
+            let state = importListFromData(contents:contents, managedObjectContext: managedObjectContext)
+            if(state == ImportState.success) {
+                print("import success")
+            } else if(state == ImportState.exists) {
+                if let poiList = getImportedList() {
+                    showActionLongpress(title:poiList.title)
+                }
+            } else if(state == ImportState.failed) {
+                print("import failed")
+            }
         }
         return false
     }

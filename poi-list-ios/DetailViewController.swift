@@ -210,7 +210,11 @@ class DetailViewController: UIViewController, MKMapViewDelegate, CLLocationManag
     func mapView(_ mapView: MKMapView, didUpdate userLocation: MKUserLocation) {
         if(!initialZoom) {
             initialZoom = true
-            zoomMap()
+            if ProcessInfo.processInfo.arguments.contains("UITEST") {
+                // zooming the map could fail the UI test when placing a pin. Is there a better way?
+            } else {
+                zoomMap()
+            }
         }
     }
     func mapView(_ mapView: MKMapView, didFailToLocateUserWithError error: Error) {}
@@ -263,7 +267,9 @@ class DetailViewController: UIViewController, MKMapViewDelegate, CLLocationManag
             xLabel.isHidden = false
         case .ending, .canceling:
             if let globalPoint = view.superview?.convert(view.frame.origin, to: nil) {
-                if(globalPoint.x < 100 && globalPoint.y < 100) {
+                let xLabelPosX = xLabel.frame.origin.x + xLabel.frame.size.width
+                let xLabelPosY = xLabel.frame.origin.y + xLabel.frame.size.height
+                if(globalPoint.x < xLabelPosX && globalPoint.y < xLabelPosY) {
                     DispatchQueue.main.async {
                         self.deletePoiModelForAnnotation(pin:view.annotation!)
                     }

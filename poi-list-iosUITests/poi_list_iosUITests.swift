@@ -19,8 +19,11 @@ class poi_list_iosUITests: XCTestCase {
         // In UI tests it is usually best to stop immediately when a failure occurs.
         continueAfterFailure = false
         // UI tests must launch the application that they test. Doing this in setup will make sure it happens for each test method.
-        XCUIApplication().launch()
-
+        //XCUIApplication().launch()
+        let app = XCUIApplication()
+        app.launchArguments.append("UITEST")
+        app.launch()
+        
         // In UI tests it’s important to set the initial state - such as interface orientation - required for your tests before they run. The setUp method is a good place to do this.
     }
     
@@ -64,12 +67,12 @@ class poi_list_iosUITests: XCTestCase {
         
         // go to detailview
         app.tables.children(matching: .cell).element(boundBy: 0).tap()
-        
-        /*
-         // if on a fresh install, this dialog needs to be dismissed or the test will fail.
-        app.alerts["Allow “poi-list-ios” to access your location while you use the app?"].buttons["Allow"].tap()
-        */
-        
+                
+        // if on a fresh install, this dialog needs to be dismissed or the test will fail.
+        if (app.alerts.element.collectionViews.buttons["Allow"].exists) {
+            app.alerts.element.collectionViews.buttons["Allow"].tap()
+        }
+
         // add pin
         let map = app.otherElements.containing(.navigationBar, identifier:"poi-list-title").children(matching: .other).element.children(matching: .other).element.children(matching: .other).element.children(matching: .other).element.children(matching: .other).element.children(matching: .map).element
         map.press(forDuration:2.0)

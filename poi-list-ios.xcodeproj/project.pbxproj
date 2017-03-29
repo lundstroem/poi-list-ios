@@ -25,6 +25,8 @@
 		03FC39041E5E109F00093D5A /* file_icon_44x58.png in Resources */ = {isa = PBXBuildFile; fileRef = 03FC39001E5E109F00093D5A /* file_icon_44x58.png */; };
 		03FC39051E5E109F00093D5A /* file_icon_64x64.png in Resources */ = {isa = PBXBuildFile; fileRef = 03FC39011E5E109F00093D5A /* file_icon_64x64.png */; };
 		2B52FD281E8523680038C641 /* TestHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B52FD271E8523680038C641 /* TestHelper.swift */; };
+		2B82EC351E8BD26400723963 /* mockList1.poilist in Resources */ = {isa = PBXBuildFile; fileRef = 2B82EC331E8BD26400723963 /* mockList1.poilist */; };
+		2B82EC361E8BD26400723963 /* mockList2.poilist in Resources */ = {isa = PBXBuildFile; fileRef = 2B82EC341E8BD26400723963 /* mockList2.poilist */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -69,6 +71,8 @@
 		03FC39001E5E109F00093D5A /* file_icon_44x58.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = file_icon_44x58.png; sourceTree = "<group>"; };
 		03FC39011E5E109F00093D5A /* file_icon_64x64.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = file_icon_64x64.png; sourceTree = "<group>"; };
 		2B52FD271E8523680038C641 /* TestHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestHelper.swift; sourceTree = "<group>"; };
+		2B82EC331E8BD26400723963 /* mockList1.poilist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = mockList1.poilist; sourceTree = "<group>"; };
+		2B82EC341E8BD26400723963 /* mockList2.poilist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = mockList2.poilist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -158,6 +162,8 @@
 		03FC38FD1E5E109F00093D5A /* res */ = {
 			isa = PBXGroup;
 			children = (
+				2B82EC331E8BD26400723963 /* mockList1.poilist */,
+				2B82EC341E8BD26400723963 /* mockList2.poilist */,
 				03FC38FE1E5E109F00093D5A /* file_icon_22x29.png */,
 				03FC38FF1E5E109F00093D5A /* file_icon_320x320.png */,
 				03FC39001E5E109F00093D5A /* file_icon_44x58.png */,
@@ -277,7 +283,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				03FC39041E5E109F00093D5A /* file_icon_44x58.png in Resources */,
+				2B82EC361E8BD26400723963 /* mockList2.poilist in Resources */,
 				03FC39031E5E109F00093D5A /* file_icon_320x320.png in Resources */,
+				2B82EC351E8BD26400723963 /* mockList1.poilist in Resources */,
 				03FC39021E5E109F00093D5A /* file_icon_22x29.png in Resources */,
 				03FC39051E5E109F00093D5A /* file_icon_64x64.png in Resources */,
 				03C2DEC41E5094B500CFDA3E /* LaunchScreen.storyboard in Resources */,

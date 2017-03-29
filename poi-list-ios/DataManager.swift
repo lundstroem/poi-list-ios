@@ -237,14 +237,20 @@ func checkIfPoiListExists(poiList: PoiList, managedObjectContext: NSManagedObjec
     return true
 }
 
-func importPoiList(poiList: PoiList, managedObjectContext: NSManagedObjectContext?) {
+@discardableResult func importPoiList(poiList: PoiList, managedObjectContext: NSManagedObjectContext?) -> Bool {
     if let moc = managedObjectContext {
         if let poiListModel = insertNewPoiListModel(title: poiList.title, info: poiList.info, timestamp: poiList.timestamp, managedObjectContext: moc) {
             for poi in poiList.pois as! [Poi] {
-                insertNewPoiModel(title: poi.title, info: poi.info, lat: poi.lat, long: poi.long, poiListModel: poiListModel, managedObjectContext: moc)
+                let poiModel = insertNewPoiModel(title: poi.title, info: poi.info, lat: poi.lat, long: poi.long, poiListModel: poiListModel, managedObjectContext: moc)
+                if(poiModel == nil) {
+                    return false
+                }
             }
+        } else {
+            return false
         }
     }
+    return true
 }
 
 func savePoiModel(poiModel: PoiModel?, title: String?, info: String?, lat: Double?, long: Double?, managedObjectContext: NSManagedObjectContext?) {
@@ -321,3 +327,85 @@ func insertNewPoiListModel(title: String?, info: String?, timestamp: String, man
     }
     return nil
 }
+
+// import
+
+private var importedPoiList: PoiList?
+
+enum ImportState {
+    case failed
+    case success
+    case exists
+}
+
+func getStringContentResource(url: URL) -> String? {
+    do {
+        let contents = try String(contentsOf: url)
+        return contents
+    } catch {
+        return nil
+    }
+}
+
+func importActionCancel() {
+    importedPoiList = nil
+}
+
+@discardableResult func importActionSaveCopy(managedObjectContext: NSManagedObjectContext?) -> Bool {
+    if(importedPoiList == nil) {
+        return false
+    }
+    importedPoiList?.title += " copy"
+    importedPoiList?.timestamp = getTimestamp()
+    if let poiList = importedPoiList {
+        let result = importPoiList(poiList: poiList, managedObjectContext: managedObjectContext)
+        importedPoiList = nil
+        return result
+    }
+    return false
+}
+
+@discardableResult func importActionOverwrite(managedObjectContext: NSManagedObjectContext?) -> Bool {
+    if let poiList = importedPoiList {
+        let deleteResult = deletePoiList(poiList: poiList, managedObjectContext: managedObjectContext)
+        let importResult = importPoiList(poiList: poiList, managedObjectContext: managedObjectContext)
+        importedPoiList = nil
+        if(deleteResult == true && importResult == true) {
+            return true
+        }
+    }
+    return false
+}
+
+func setImportedList(list: PoiList) {
+    importedPoiList = list
+}
+
+func getImportedList() -> PoiList? {
+    return importedPoiList
+}
+
+@discardableResult func importListFromData(contents: String, managedObjectContext: NSManagedObjectContext?) -> ImportState {
+    if let data = contents.data(using: String.Encoding.utf8) {
+        if let moc = managedObjectContext {
+            if let poiList = parsePoiListJSON(data: data) {
+                let exists = checkIfPoiListExists(poiList: poiList, managedObjectContext: moc)
+                if(exists) {
+                    importedPoiList = poiList
+                    return ImportState.exists
+                } else {
+                    let success = importPoiList(poiList: poiList, managedObjectContext: moc)
+                    if(success == true) {
+                        return ImportState.success
+                    } else {
+                        return ImportState.failed
+                    }
+                }
+            }
+        }
+    }
+    return ImportState.failed
+}
+
+
+
