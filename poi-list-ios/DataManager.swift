@@ -12,6 +12,7 @@ import CoreData
 /* JSONSerializable:
  http://www.sthoughts.com/2016/06/30/swift-3-serializing-swift-structs-to-json/
  */
+
 protocol JSONRepresentable {
     var JSONRepresentation: Any { get }
 }
@@ -205,8 +206,9 @@ func checkIfPoiListExists(poiList: PoiList, managedObjectContext: NSManagedObjec
             print("Failed to delete PoiList: \(error)")
             return false
         }
+        return true
     }
-    return true
+    return false
 }
 
 @discardableResult func deletePoiListModel(poiListModel: PoiListModel, managedObjectContext: NSManagedObjectContext?) -> Bool {
@@ -219,8 +221,9 @@ func checkIfPoiListExists(poiList: PoiList, managedObjectContext: NSManagedObjec
             print("Unresolved error \(nserror), \(nserror.userInfo)")
             return false
         }
+        return true
     }
-    return true
+    return false
 }
 
 @discardableResult func deletePoiModel(poiModel: PoiModel, managedObjectContext: NSManagedObjectContext?) -> Bool {
@@ -233,8 +236,9 @@ func checkIfPoiListExists(poiList: PoiList, managedObjectContext: NSManagedObjec
             print("Unresolved error \(nserror), \(nserror.userInfo)")
             return false
         }
+        return true
     }
-    return true
+    return false
 }
 
 @discardableResult func importPoiList(poiList: PoiList, managedObjectContext: NSManagedObjectContext?) -> Bool {
@@ -242,18 +246,16 @@ func checkIfPoiListExists(poiList: PoiList, managedObjectContext: NSManagedObjec
         if let poiListModel = insertNewPoiListModel(title: poiList.title, info: poiList.info, timestamp: poiList.timestamp, managedObjectContext: moc) {
             for poi in poiList.pois as! [Poi] {
                 let poiModel = insertNewPoiModel(title: poi.title, info: poi.info, lat: poi.lat, long: poi.long, poiListModel: poiListModel, managedObjectContext: moc)
-                if(poiModel == nil) {
-                    return false
+                if(poiModel != nil) {
+                    return true
                 }
             }
-        } else {
-            return false
         }
     }
-    return true
+    return false
 }
 
-func savePoiModel(poiModel: PoiModel?, title: String?, info: String?, lat: Double?, long: Double?, managedObjectContext: NSManagedObjectContext?) {
+@discardableResult func savePoiModel(poiModel: PoiModel?, title: String?, info: String?, lat: Double?, long: Double?, managedObjectContext: NSManagedObjectContext?) -> Bool {
     if let poi = poiModel {
         poi.title = title
         poi.info = info
@@ -272,12 +274,15 @@ func savePoiModel(poiModel: PoiModel?, title: String?, info: String?, lat: Doubl
             } catch {
                 let nserror = error as NSError
                 print("Unresolved error \(nserror), \(nserror.userInfo)")
+                return false
             }
+            return true
         }
     }
+    return false
 }
 
-func savePoiListModel(poiListModel: PoiListModel, title: String?, info: String?, managedObjectContext: NSManagedObjectContext?) {
+@discardableResult func savePoiListModel(poiListModel: PoiListModel, title: String?, info: String?, managedObjectContext: NSManagedObjectContext?) -> Bool {
     if let moc = managedObjectContext {
         poiListModel.title = title
         poiListModel.info = info
@@ -286,8 +291,11 @@ func savePoiListModel(poiListModel: PoiListModel, title: String?, info: String?,
         } catch {
             let nserror = error as NSError
             print("Unresolved error \(nserror), \(nserror.userInfo)")
+            return false
         }
+        return true
     }
+    return false
 }
 
 @discardableResult func insertNewPoiModel(title: String?, info: String?, lat: Double, long: Double, poiListModel: PoiListModel?, managedObjectContext: NSManagedObjectContext?) -> PoiModel? {
@@ -311,7 +319,7 @@ func savePoiListModel(poiListModel: PoiListModel, title: String?, info: String?,
     return nil
 }
 
-func insertNewPoiListModel(title: String?, info: String?, timestamp: String, managedObjectContext: NSManagedObjectContext?) -> PoiListModel? {
+@discardableResult func insertNewPoiListModel(title: String?, info: String?, timestamp: String, managedObjectContext: NSManagedObjectContext?) -> PoiListModel? {
     if let moc = managedObjectContext {
         let newPoiList = PoiListModel(context: moc)
         newPoiList.timestamp = timestamp
@@ -328,7 +336,7 @@ func insertNewPoiListModel(title: String?, info: String?, timestamp: String, man
     return nil
 }
 
-// import
+// MARK: - Import PoiList
 
 private var importedPoiList: PoiList?
 

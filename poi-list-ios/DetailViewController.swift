@@ -10,10 +10,9 @@ import UIKit
 import MapKit
 import CoreData
 
-
 class DetailViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDelegate {
 
-    // associate a PoiModel with a Pin
+    // Associate a PoiModel with a Pin
     class PoiModelPin {
         var poiModel: PoiModel
         var pin: MKPointAnnotation
@@ -93,7 +92,7 @@ class DetailViewController: UIViewController, MKMapViewDelegate, CLLocationManag
             zoomRect = MKMapRectUnion(zoomRect, pointRect)
         }
         let padding: CGFloat = 100
-        mapView.setVisibleMapRect(zoomRect, edgePadding:UIEdgeInsetsMake(padding, padding, padding,     padding), animated: true)
+        mapView.setVisibleMapRect(zoomRect, edgePadding:UIEdgeInsetsMake(padding, padding, padding, padding), animated: true)
         mapView.delegate = self
     }
     
@@ -190,23 +189,21 @@ class DetailViewController: UIViewController, MKMapViewDelegate, CLLocationManag
         super.didReceiveMemoryWarning()
     }
 
-    //Responding to Map Position Changes
-    func mapView(_ mapView: MKMapView, regionWillChangeAnimated animated: Bool) {
-    }
-    func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool){
-    }
-    // Loading the Map Data
-    func mapViewWillStartLoadingMap(_ mapView: MKMapView) {
-    }
+    // MARK: - Responding to Map Position Changes
+    func mapView(_ mapView: MKMapView, regionWillChangeAnimated animated: Bool) {}
+    func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {}
+    
+    // MARK: - Loading the Map Data
+    func mapViewWillStartLoadingMap(_ mapView: MKMapView) {}
     func mapViewDidFinishLoadingMap(_ mapView: MKMapView) {}
     func mapViewDidFailLoadingMap(_ mapView: MKMapView, withError error: Error) {}
     func mapViewWillStartRenderingMap(_ mapView: MKMapView) {}
     func mapViewDidFinishRenderingMap(_ mapView: MKMapView, fullyRendered: Bool) {}
     
-    // Tracking the User Location
-    func mapViewWillStartLocatingUser(_ mapView: MKMapView) {
-    }
+    // MARK: - Tracking the User Location
+    func mapViewWillStartLocatingUser(_ mapView: MKMapView) {}
     func mapViewDidStopLocatingUser(_ mapView: MKMapView) {}
+    
     func mapView(_ mapView: MKMapView, didUpdate userLocation: MKUserLocation) {
         if(!initialZoom) {
             initialZoom = true
@@ -219,6 +216,7 @@ class DetailViewController: UIViewController, MKMapViewDelegate, CLLocationManag
     }
     func mapView(_ mapView: MKMapView, didFailToLocateUserWithError error: Error) {}
     func mapView(_ mapView: MKMapView, didChange mode: MKUserTrackingMode, animated: Bool) {}
+    
     private func locationManager(manager: CLLocationManager, didChangeAuthorizationStatus status: CLAuthorizationStatus) {
         guard status == .authorizedWhenInUse else {
                 print("location not enabled")
@@ -226,7 +224,8 @@ class DetailViewController: UIViewController, MKMapViewDelegate, CLLocationManag
         }
         mapView.showsUserLocation = true
     }
-    // Managing Annotation Views
+    
+    // MARK: - Managing Annotation Views
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
         if annotation is MKUserLocation {
             return nil
@@ -257,7 +256,8 @@ class DetailViewController: UIViewController, MKMapViewDelegate, CLLocationManag
         poiViewController.managedObjectContext = self.managedObjectContext
         navigationController?.pushViewController(poiViewController, animated: true)
     }
-    // Dragging an Annotation View
+    
+    // MARK: - Dragging an Annotation View
     func mapView(_ mapView: MKMapView,
                  annotationView view: MKAnnotationView,
                  didChange newState: MKAnnotationViewDragState,
@@ -281,10 +281,12 @@ class DetailViewController: UIViewController, MKMapViewDelegate, CLLocationManag
         default: break
         }
     }
-    // Selecting Annotation Views
+    
+    // MARK: - Selecting Annotation Views
     func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {}
     func mapView(_ mapView: MKMapView, didDeselect view: MKAnnotationView) {}
-    // Managing the Display of Overlays
+    
+    // MARK: - Managing the Display of Overlays
     //func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {}
     //func mapView(_ mapView: MKMapView, didAdd renderers: [MKOverlayRenderer]) {}
 }

@@ -53,8 +53,7 @@ class PoiListViewController: UIViewController {
         if let list = poiListModel {
             savePoiListModel(poiListModel: list, title: titleView.text, info: infoView.text, managedObjectContext: self.managedObjectContext)
         } else {
-            if insertNewPoiListModel(title:titleView.text, info:infoView.text, timestamp:getTimestamp(), managedObjectContext: self.managedObjectContext) != nil {
-            }
+            insertNewPoiListModel(title:titleView.text, info:infoView.text, timestamp:getTimestamp(), managedObjectContext: self.managedObjectContext)
         }
         exit()
         dismiss(animated: true, completion: nil)
