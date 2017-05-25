@@ -20,10 +20,6 @@
 		03C2DECF1E5094B500CFDA3E /* poi_list_iosTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C2DECE1E5094B500CFDA3E /* poi_list_iosTests.swift */; };
 		03C2DEDA1E5094B500CFDA3E /* poi_list_iosUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C2DED91E5094B500CFDA3E /* poi_list_iosUITests.swift */; };
 		03FC38FC1E5DF4AE00093D5A /* EmailManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03FC38FB1E5DF4AE00093D5A /* EmailManager.swift */; };
-		03FC39021E5E109F00093D5A /* file_icon_22x29.png in Resources */ = {isa = PBXBuildFile; fileRef = 03FC38FE1E5E109F00093D5A /* file_icon_22x29.png */; };
-		03FC39031E5E109F00093D5A /* file_icon_320x320.png in Resources */ = {isa = PBXBuildFile; fileRef = 03FC38FF1E5E109F00093D5A /* file_icon_320x320.png */; };
-		03FC39041E5E109F00093D5A /* file_icon_44x58.png in Resources */ = {isa = PBXBuildFile; fileRef = 03FC39001E5E109F00093D5A /* file_icon_44x58.png */; };
-		03FC39051E5E109F00093D5A /* file_icon_64x64.png in Resources */ = {isa = PBXBuildFile; fileRef = 03FC39011E5E109F00093D5A /* file_icon_64x64.png */; };
 		2B52FD281E8523680038C641 /* TestHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B52FD271E8523680038C641 /* TestHelper.swift */; };
 		2B82EC351E8BD26400723963 /* mockList1.poilist in Resources */ = {isa = PBXBuildFile; fileRef = 2B82EC331E8BD26400723963 /* mockList1.poilist */; };
 		2B82EC361E8BD26400723963 /* mockList2.poilist in Resources */ = {isa = PBXBuildFile; fileRef = 2B82EC341E8BD26400723963 /* mockList2.poilist */; };
@@ -66,10 +62,6 @@
 		03C2DED91E5094B500CFDA3E /* poi_list_iosUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = poi_list_iosUITests.swift; sourceTree = "<group>"; };
 		03C2DEDB1E5094B500CFDA3E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		03FC38FB1E5DF4AE00093D5A /* EmailManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmailManager.swift; sourceTree = "<group>"; };
-		03FC38FE1E5E109F00093D5A /* file_icon_22x29.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = file_icon_22x29.png; sourceTree = "<group>"; };
-		03FC38FF1E5E109F00093D5A /* file_icon_320x320.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = file_icon_320x320.png; sourceTree = "<group>"; };
-		03FC39001E5E109F00093D5A /* file_icon_44x58.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = file_icon_44x58.png; sourceTree = "<group>"; };
-		03FC39011E5E109F00093D5A /* file_icon_64x64.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = file_icon_64x64.png; sourceTree = "<group>"; };
 		2B52FD271E8523680038C641 /* TestHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestHelper.swift; sourceTree = "<group>"; };
 		2B82EC331E8BD26400723963 /* mockList1.poilist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = mockList1.poilist; sourceTree = "<group>"; };
 		2B82EC341E8BD26400723963 /* mockList2.poilist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = mockList2.poilist; sourceTree = "<group>"; };
@@ -164,10 +156,6 @@
 			children = (
 				2B82EC331E8BD26400723963 /* mockList1.poilist */,
 				2B82EC341E8BD26400723963 /* mockList2.poilist */,
-				03FC38FE1E5E109F00093D5A /* file_icon_22x29.png */,
-				03FC38FF1E5E109F00093D5A /* file_icon_320x320.png */,
-				03FC39001E5E109F00093D5A /* file_icon_44x58.png */,
-				03FC39011E5E109F00093D5A /* file_icon_64x64.png */,
 			);
 			path = res;
 			sourceTree = "<group>";
@@ -241,7 +229,7 @@
 					03C2DEB01E5094B500CFDA3E = {
 						CreatedOnToolsVersion = 8.2.1;
 						DevelopmentTeam = QM9YTQA8XQ;
-						ProvisioningStyle = Automatic;
+						ProvisioningStyle = Manual;
 					};
 					03C2DEC91E5094B500CFDA3E = {
 						CreatedOnToolsVersion = 8.2.1;
@@ -282,12 +270,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				03FC39041E5E109F00093D5A /* file_icon_44x58.png in Resources */,
 				2B82EC361E8BD26400723963 /* mockList2.poilist in Resources */,
-				03FC39031E5E109F00093D5A /* file_icon_320x320.png in Resources */,
 				2B82EC351E8BD26400723963 /* mockList1.poilist in Resources */,
-				03FC39021E5E109F00093D5A /* file_icon_22x29.png in Resources */,
-				03FC39051E5E109F00093D5A /* file_icon_64x64.png in Resources */,
 				03C2DEC41E5094B500CFDA3E /* LaunchScreen.storyboard in Resources */,
 				03C2DEC11E5094B500CFDA3E /* Assets.xcassets in Resources */,
 				03C2DEBF1E5094B500CFDA3E /* Main.storyboard in Resources */,
@@ -476,8 +460,10 @@
 				DEVELOPMENT_TEAM = QM9YTQA8XQ;
 				INFOPLIST_FILE = "poi-list-ios/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.harrylundstrom.poi-list-ios";
+				PRODUCT_BUNDLE_IDENTIFIER = com.harrylundstrom.poilist;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "8d9951e6-d756-447e-b692-749596fe08f0";
+				PROVISIONING_PROFILE_SPECIFIER = "poilist-dev-profile";
 				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
@@ -486,11 +472,14 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				DEVELOPMENT_TEAM = QM9YTQA8XQ;
 				INFOPLIST_FILE = "poi-list-ios/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.harrylundstrom.poi-list-ios";
+				PRODUCT_BUNDLE_IDENTIFIER = com.harrylundstrom.poilist;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "7c47d6f7-8088-46c5-b984-083f85712252";
+				PROVISIONING_PROFILE_SPECIFIER = poilist_dist_profile;
 				SWIFT_VERSION = 3.0;
 			};
 			name = Release;
