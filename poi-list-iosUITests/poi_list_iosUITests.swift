@@ -44,7 +44,7 @@ class poi_list_iosUITests: XCTestCase {
         let textView = app.children(matching: .window).element(boundBy: 0).children(matching: .other).element.children(matching: .other).element.children(matching: .textView).element
         textView.tap()
         textView.typeText("poi-list-description")
-        app.navigationBars["Title"].buttons["Done"].tap()
+        app.navigationBars["New List"].buttons["Done"].tap()
         
         // remove
         poiListNavigationBar.buttons["Edit"].tap()
@@ -63,13 +63,13 @@ class poi_list_iosUITests: XCTestCase {
         let textView = app.children(matching: .window).element(boundBy: 0).children(matching: .other).element.children(matching: .other).element.children(matching: .textView).element
         textView.tap()
         textView.typeText("poi-list-description")
-        app.navigationBars["Title"].buttons["Done"].tap()
+        app.navigationBars["New List"].buttons["Done"].tap()
         
         // go to detailview
         app.tables.children(matching: .cell).element(boundBy: 0).tap()
                 
         // if on a fresh install, this dialog needs to be dismissed or the test will fail.
-        if (app.alerts.element.collectionViews.buttons["Allow"].exists) {
+        if app.alerts.element.collectionViews.buttons["Allow"].exists {
             app.alerts.element.collectionViews.buttons["Allow"].tap()
         }
 
@@ -83,10 +83,10 @@ class poi_list_iosUITests: XCTestCase {
         app.buttons["More Info"].tap()
         app.textFields.containing(.button, identifier:"Clear text").element.typeText("y")
         
-        let textView2 = app.otherElements.containing(.navigationBar, identifier:"root").children(matching: .other).element.children(matching: .other).element.children(matching: .other).element.children(matching: .textView).element
+        let textView2 = app.textViews["info"]
         textView2.tap()
         textView2.typeText("y")
-        app.navigationBars["root"].buttons["poi-list-title"].tap()
+        app.navigationBars["title"].buttons["poi-list-title"].tap()
         
         // check if title and info has been updated
         app.otherElements["titley, yinfo"].tap()
@@ -111,7 +111,7 @@ class poi_list_iosUITests: XCTestCase {
         let textView = app.children(matching: .window).element(boundBy: 0).children(matching: .other).element.children(matching: .other).element.children(matching: .textView).element
         textView.tap()
         textView.typeText("poi-list-description")
-        app.navigationBars["Title"].buttons["Done"].tap()
+        app.navigationBars["New List"].buttons["Done"].tap()
         
         // go to detailview
         app.tables.children(matching: .cell).element(boundBy: 0).tap()
@@ -119,25 +119,16 @@ class poi_list_iosUITests: XCTestCase {
         // edit poi list data
         let editButton = app.toolbars.buttons["Edit"]
         editButton.tap()
-        let moreKey = app.keys["more"]
-        moreKey.tap()
-        moreKey.tap()
         let titleTextField = app.textFields["title"]
         titleTextField.typeText("2")
-        let textView3 = app.children(matching: .window).element(boundBy: 0).children(matching: .other).element.children(matching: .other).element.children(matching: .textView).element
+        let textView3 = app.textViews["poi-list-description"]
         textView3.tap()
-        moreKey.tap()
-        moreKey.tap()
         textView3.typeText("2")
         let listNavigationBar = app.navigationBars["poi-list-title"]
         listNavigationBar.buttons["Cancel"].tap()
         editButton.tap()
-        moreKey.tap()
-        moreKey.tap()
         titleTextField.typeText("2")
         textView.tap()
-        moreKey.tap()
-        moreKey.tap()
         textView.typeText("2")
         listNavigationBar.buttons["Done"].tap()
         

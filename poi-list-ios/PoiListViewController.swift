@@ -32,7 +32,9 @@ class PoiListViewController: UIViewController {
             self.titleView.text = list.title
             self.infoView.text = list.info
         } else {
-            self.title = "New List"
+            if let navTitle = navItem {
+                navTitle.title = "New List"
+            }
         }
     }
     

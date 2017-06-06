@@ -34,12 +34,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
             importActionCancel()
         }
         alertController.addAction(cancelAction)
-        let OKAction = UIAlertAction(title: "Save Copy", style: .default) { action in
-            importActionSaveCopy(managedObjectContext: self.managedObjectContext)
+        let OKAction = UIAlertAction(title: "Save Copy", style: .default) { [weak self] action in
+            importActionSaveCopy(managedObjectContext: self?.managedObjectContext)
         }
         alertController.addAction(OKAction)
-        let newSaveAction = UIAlertAction(title: "Overwrite", style: .destructive) { action in
-            importActionOverwrite(managedObjectContext: self.managedObjectContext)
+        let newSaveAction = UIAlertAction(title: "Overwrite", style: .destructive) { [weak self] action in
+            importActionOverwrite(managedObjectContext: self?.managedObjectContext)
         }
         alertController.addAction(newSaveAction)
         self.window?.rootViewController?.present(alertController, animated: true) {
@@ -49,14 +49,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
     func application(_ app: UIApplication, open url: URL, options: [UIApplicationOpenURLOptionsKey : Any] = [:]) -> Bool {
         if let contents = getStringContentResource(url:url) {
             let state = importListFromData(contents:contents, managedObjectContext: managedObjectContext)
-            if(state == ImportState.success) {
-                print("import success")
-            } else if(state == ImportState.exists) {
-                if let poiList = getImportedList() {
-                    showActionLongpress(title:poiList.title)
-                }
-            } else if(state == ImportState.failed) {
-                print("import failed")
+            switch state {
+                case ImportState.success:
+                    print("import success")
+                case ImportState.exists:
+                    if let poiList = getImportedList() {
+                        showActionLongpress(title:poiList.title)
+                    }
+                case ImportState.failed:
+                    print("import failed")
             }
         }
         return false
@@ -83,7 +84,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
     func applicationWillTerminate(_ application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
         // Saves changes in the application's managed object context before the application terminates.
-        self.saveContext()
+        saveContext()
     }
 
     // MARK: - Split view
@@ -114,7 +115,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
                  * The store could not be migrated to the current model version.
                  Check the error message to determine what the actual problem was.
                  */
-                print("Unresolved error \(error), \(error.userInfo)")
+                print("Unresolved error \(error.localizedDescription), \(error.userInfo)")
             }
         })
         return container
@@ -131,7 +132,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
                 // Replace this implementation with code to handle the error appropriately.
                 // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
                 let nserror = error as NSError
-                fatalError("Unresolved error \(nserror), \(nserror.userInfo)")
+                fatalError("Unresolved error \(nserror.localizedDescription), \(nserror.userInfo)")
             }
         }
     }

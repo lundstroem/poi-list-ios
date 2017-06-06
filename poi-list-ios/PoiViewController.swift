@@ -41,7 +41,7 @@ class PoiViewController: UIViewController {
     }
     
     func showToast(text: String) {
-        if(toastFinished) {
+        if toastFinished {
             toastFinished = false
             toastView.isHidden = false
             if let view = toastView {
@@ -70,6 +70,7 @@ class PoiViewController: UIViewController {
         if let poi = poiModel {
             self.titleView.text = poi.title
             self.infoView.text = poi.info
+            self.navigationItem.title = self.titleView.text
         }
     }
     

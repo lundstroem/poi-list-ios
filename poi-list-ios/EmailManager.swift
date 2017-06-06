@@ -27,7 +27,7 @@ public class EmailManager : NSObject, MFMailComposeViewControllerDelegate {
         if MFMailComposeViewController.canSendMail() {
             if let composer = mailComposeViewController {
                 composer.setSubject(subject)
-                composer.setMessageBody(body, isHTML: false)
+                composer.setMessageBody(body, isHTML: true)
                 if let attach = attachment {
                     let myNSString = attach as NSString
                     let myNSData = myNSString.data(using: String.Encoding.utf8.rawValue)!

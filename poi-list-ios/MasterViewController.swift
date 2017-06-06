@@ -87,7 +87,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
                 try context.save()
             } catch {
                 let nserror = error as NSError
-                print("Unresolved error \(nserror), \(nserror.userInfo)")
+                print("Unresolved error \(nserror.localizedDescription), \(nserror.userInfo)")
             }
         }
     }
@@ -115,7 +115,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
             try _fetchedResultsController!.performFetch()
         } catch {
              let nserror = error as NSError
-             print("Unresolved error \(nserror), \(nserror.userInfo)")
+             print("Unresolved error \(nserror.localizedDescription), \(nserror.userInfo)")
         }
         return _fetchedResultsController!
     }    

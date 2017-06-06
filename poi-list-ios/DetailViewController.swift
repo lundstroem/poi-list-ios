@@ -43,9 +43,8 @@ class DetailViewController: UIViewController, MKMapViewDelegate, CLLocationManag
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        if(mapView != nil) {
-            let annotationsToRemove = mapView.annotations.filter { $0 !== mapView.userLocation }
-            mapView.removeAnnotations(annotationsToRemove)
+        if let annotationsToRemove = mapView?.annotations.filter({ $0 !== mapView?.userLocation }) {
+            mapView?.removeAnnotations(annotationsToRemove)
         }
         if let list = poiListModel {
             self.navigationItem.title = list.title
@@ -73,7 +72,7 @@ class DetailViewController: UIViewController, MKMapViewDelegate, CLLocationManag
             modalViewController.modalPresentationStyle = .popover
             modalViewController.managedObjectContext = moc
             modalViewController.poiListModel = poiListModel
-            present(modalViewController, animated: true, completion: { () -> Void   in
+            present(modalViewController, animated: true, completion: { () -> Void in
                 print("modal completion")
             })
         }
@@ -96,13 +95,20 @@ class DetailViewController: UIViewController, MKMapViewDelegate, CLLocationManag
         mapView.delegate = self
     }
     
-    func sendMail(json: String) {
-        emailManager!.sendMailTo(subject: "POI List", body: "body", attachment: json, fromViewController: self)
+    func sendMail(title: String, json: String) {
+        let appStoreLink = "<a href=\"https://itunes.apple.com/us/app/poi-list/id1240789342?ls=1&mt=8\">Get POI List from App Store</a>"
+        let body = appStoreLink + "<br /><br />Longpress on the attachment to copy it to POI List."
+        if let manager = emailManager {
+            manager.sendMailTo(subject: "POI List: \(title)", body: body, attachment: json, fromViewController: self)
+        }
     }
     
     @IBAction func exportList(_ sender: Any) {
-        if let json = getPoiListAsJSON(poiListModel:poiListModel, managedObjectContext: managedObjectContext) {
-            sendMail(json: json)
+        if let list = poiListModel {
+            let listTitle = list.title ?? "(no title)"
+            if let json = getPoiListAsJSON(poiListModel:poiListModel, managedObjectContext: managedObjectContext) {
+                sendMail(title: listTitle, json: json)
+            }
         }
     }
     
@@ -120,9 +126,7 @@ class DetailViewController: UIViewController, MKMapViewDelegate, CLLocationManag
         pin.subtitle = poiModel.info
         let poiPin = PoiModelPin(poiModel:poiModel, pin:pin)
         pinsArray.append(poiPin)
-        if(mapView != nil) {
-            mapView.addAnnotation(pin)
-        }
+        mapView.addAnnotation(pin)
     }
     
     func addNewPoiModel(lat: CLLocationDegrees, long: CLLocationDegrees, title: String, info: String) -> PoiModel? {
@@ -139,7 +143,7 @@ class DetailViewController: UIViewController, MKMapViewDelegate, CLLocationManag
         if let poiModel = getModelForPin(pin:pin) {
             var index = 0
             for poiModelPin in pinsArray  {
-                if(poiModelPin.pin === pin) {
+                if poiModelPin.pin === pin {
                     self.mapView.removeAnnotation(pin)
                     pinsArray.remove(at: index)
                     break
@@ -152,7 +156,7 @@ class DetailViewController: UIViewController, MKMapViewDelegate, CLLocationManag
     
     func getModelForPin(pin: MKAnnotation) -> PoiModel? {
         for poiModelPin in pinsArray  {
-            if(poiModelPin.pin === pin) {
+            if poiModelPin.pin === pin {
                 return poiModelPin.poiModel
             }
         }
@@ -162,7 +166,7 @@ class DetailViewController: UIViewController, MKMapViewDelegate, CLLocationManag
     func mapViewLongpressed(gestureRecognizer: UIGestureRecognizer) {
         let touchPoint = gestureRecognizer.location(in: mapView)
         let coordinate = mapView.convert(touchPoint, toCoordinateFrom: mapView)
-        if(!alertShowing) {
+        if !alertShowing {
             alertShowing = true
             showActionLongpress(location:coordinate)
         }
@@ -170,18 +174,18 @@ class DetailViewController: UIViewController, MKMapViewDelegate, CLLocationManag
     
     func showActionLongpress(location: CLLocationCoordinate2D) {
         let alertController = UIAlertController(title: nil, message: "Add pin?", preferredStyle: .actionSheet)
-        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel) { action in
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel) { [unowned self] action in
             self.alertShowing = false
         }
         alertController.addAction(cancelAction)
-        let OKAction = UIAlertAction(title: "OK", style: .default) { action in
+        let OKAction = UIAlertAction(title: "OK", style: .default) { [unowned self] action in
             if let poiModel = self.addNewPoiModel(lat: location.latitude, long: location.longitude, title: "title", info: "info") {
                 self.addLocation(poiModel: poiModel)
             }
             self.alertShowing = false
         }
         alertController.addAction(OKAction)
-        self.present(alertController, animated: true) {
+            present(alertController, animated: true) {
         }
     }
 
@@ -205,7 +209,7 @@ class DetailViewController: UIViewController, MKMapViewDelegate, CLLocationManag
     func mapViewDidStopLocatingUser(_ mapView: MKMapView) {}
     
     func mapView(_ mapView: MKMapView, didUpdate userLocation: MKUserLocation) {
-        if(!initialZoom) {
+        if !initialZoom {
             initialZoom = true
             if ProcessInfo.processInfo.arguments.contains("UITEST") {
                 // zooming the map could fail the UI test when placing a pin. Is there a better way?
@@ -219,7 +223,7 @@ class DetailViewController: UIViewController, MKMapViewDelegate, CLLocationManag
     
     private func locationManager(manager: CLLocationManager, didChangeAuthorizationStatus status: CLAuthorizationStatus) {
         guard status == .authorizedWhenInUse else {
-                print("location not enabled")
+            print("location not enabled")
             return
         }
         mapView.showsUserLocation = true
@@ -269,7 +273,7 @@ class DetailViewController: UIViewController, MKMapViewDelegate, CLLocationManag
             if let globalPoint = view.superview?.convert(view.frame.origin, to: nil) {
                 let xLabelPosX = xLabel.frame.origin.x + xLabel.frame.size.width
                 let xLabelPosY = xLabel.frame.origin.y + xLabel.frame.size.height
-                if(globalPoint.x < xLabelPosX && globalPoint.y < xLabelPosY) {
+                if globalPoint.x < xLabelPosX && globalPoint.y < xLabelPosY {
                     DispatchQueue.main.async {
                         self.deletePoiModelForAnnotation(pin:view.annotation!)
                     }

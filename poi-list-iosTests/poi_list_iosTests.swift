@@ -51,11 +51,11 @@ class poi_list_iosTests: XCTestCase {
         let mock1 = Bundle.main.url(forResource: "mockList1", withExtension:"poilist", subdirectory:nil)
         if let mock1ListString = getStringContentResource(url: mock1!) {
             let state = importListFromData(contents:mock1ListString, managedObjectContext: moc)
-            if(state == ImportState.success) {
+            if state == ImportState.success {
                 print("import success")
-            } else if(state == ImportState.exists) {
+            } else if state == ImportState.exists {
                 XCTFail("expected importstate success")
-            } else if(state == ImportState.failed) {
+            } else if state == ImportState.failed {
                 XCTFail("expected importstate success")
             }
         } else {
@@ -66,11 +66,11 @@ class poi_list_iosTests: XCTestCase {
         let mock2 = Bundle.main.url(forResource: "mockList1", withExtension:"poilist", subdirectory:nil)
         if let mock2ListString = getStringContentResource(url: mock2!) {
             let state = importListFromData(contents:mock2ListString, managedObjectContext: moc)
-            if(state == ImportState.success) {
+            if state == ImportState.success {
                 XCTFail("expected importstate exists")
-            } else if(state == ImportState.exists) {
+            } else if state == ImportState.exists {
                 print("import exists")
-            } else if(state == ImportState.failed) {
+            } else if state == ImportState.failed {
                 XCTFail("expected importstate exists")
             }
         } else {
@@ -80,7 +80,7 @@ class poi_list_iosTests: XCTestCase {
         importActionCancel()
 
         let importResult = importActionSaveCopy(managedObjectContext: moc)
-        if(importResult == true) {
+        if importResult {
             XCTFail("should not be able to save because we canceled the import.")
         }
         
@@ -88,11 +88,11 @@ class poi_list_iosTests: XCTestCase {
         let mock3 = Bundle.main.url(forResource: "mockList1", withExtension:"poilist", subdirectory:nil)
         if let mock3ListString = getStringContentResource(url: mock3!) {
             let state = importListFromData(contents:mock3ListString, managedObjectContext: moc)
-            if(state == ImportState.success) {
+            if state == ImportState.success {
                 XCTFail("expected importstate exists")
-            } else if(state == ImportState.exists) {
+            } else if state == ImportState.exists {
                 print("import exists")
-            } else if(state == ImportState.failed) {
+            } else if state == ImportState.failed {
                 XCTFail("expected importstate exists")
             }
         } else {
@@ -100,7 +100,7 @@ class poi_list_iosTests: XCTestCase {
         }
         
         let importResult1 = importActionSaveCopy(managedObjectContext: moc)
-        if(importResult1 == false) {
+        if !importResult1 {
             XCTFail("could not save copy of list.")
         }
         
@@ -108,11 +108,11 @@ class poi_list_iosTests: XCTestCase {
         let mock4 = Bundle.main.url(forResource: "mockList1", withExtension:"poilist", subdirectory:nil)
         if let mock4ListString = getStringContentResource(url: mock4!) {
             let state = importListFromData(contents:mock4ListString, managedObjectContext: moc)
-            if(state == ImportState.success) {
+            if state == ImportState.success {
                 XCTFail("expected importstate exists")
-            } else if(state == ImportState.exists) {
+            } else if state == ImportState.exists {
                 print("import exists")
-            } else if(state == ImportState.failed) {
+            } else if state == ImportState.failed {
                 XCTFail("expected importstate exists")
             }
         } else {
@@ -120,7 +120,7 @@ class poi_list_iosTests: XCTestCase {
         }
         
         let importResult2 = importActionOverwrite(managedObjectContext: moc)
-        if(importResult2 == false) {
+        if !importResult2 {
             XCTFail("could not overwrite list.")
         }
         
@@ -128,11 +128,11 @@ class poi_list_iosTests: XCTestCase {
         let mock5 = Bundle.main.url(forResource: "mockList2", withExtension:"poilist", subdirectory:nil)
         if let mock5ListString = getStringContentResource(url: mock5!) {
             let state = importListFromData(contents:mock5ListString, managedObjectContext: moc)
-            if(state == ImportState.success) {
+            if state == ImportState.success {
                 print("import success")
-            } else if(state == ImportState.exists) {
+            } else if state == ImportState.exists {
                 XCTFail("expected importstate success")
-            } else if(state == ImportState.failed) {
+            } else if state == ImportState.failed {
                 XCTFail("expected importstate success")
             }
         } else {
