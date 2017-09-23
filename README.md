@@ -6,9 +6,7 @@
 - Existing POIs can be moved on the map.
 - POI collections can be shared and imported by e-mail.
 ## todo:
-- Convert to Swift 4.
 - Make better use of the language features, and general coding guidelines for Swift.
 - Increase automated test coverage (refactor code to be more testable).
 - Simplify CoreData <-> JSON conversion.
-- Graphic design.
 

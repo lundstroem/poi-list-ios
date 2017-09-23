@@ -137,13 +137,13 @@ class DetailViewController: UIViewController, MKMapViewDelegate, CLLocationManag
     }
     
     func savePoiModelForAnnotation(pin: MKAnnotation) {
-        if let poiModel = getModelForPin(pin: pin) {
+        if let poiModel = modelForPin(pin: pin) {
             savePoiModel(poiModel: poiModel, title: pin.title!, info: pin.subtitle!, lat: pin.coordinate.latitude, long: pin.coordinate.longitude, managedObjectContext: self.managedObjectContext)
         }
     }
     
     func deletePoiModelForAnnotation(pin: MKAnnotation) {
-        if let poiModel = getModelForPin(pin: pin) {
+        if let poiModel = modelForPin(pin: pin) {
             var index = 0
             for poiModelPin in pinsArray  {
                 if poiModelPin.pin === pin {
@@ -157,7 +157,7 @@ class DetailViewController: UIViewController, MKMapViewDelegate, CLLocationManag
         }
     }
     
-    func getModelForPin(pin: MKAnnotation) -> PoiModel? {
+    func modelForPin(pin: MKAnnotation) -> PoiModel? {
         for poiModelPin in pinsArray  {
             if poiModelPin.pin === pin {
                 return poiModelPin.poiModel
@@ -261,7 +261,7 @@ class DetailViewController: UIViewController, MKMapViewDelegate, CLLocationManag
     }
     func mapView(_ mapView: MKMapView, didAdd views: [MKAnnotationView]) {}
     func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
-        let poiModel = getModelForPin(pin: view.annotation!)
+        let poiModel = modelForPin(pin: view.annotation!)
         pushPinViewController(poiModel: poiModel!)
     }
     func pushPinViewController(poiModel: PoiModel) {
