@@ -23,7 +23,7 @@ public class EmailManager : NSObject, MFMailComposeViewControllerDelegate {
         mailComposeViewController = MFMailComposeViewController()
     }
     
-    public func sendMailTo(subject:String, body:String, attachment:String?, fromViewController:UIViewController) {
+    public func sendMailTo(subject:String, body:String, attachment:String?, fromViewController:UIViewController) -> Bool {
         if MFMailComposeViewController.canSendMail() {
             if let composer = mailComposeViewController {
                 composer.setSubject(subject)
@@ -35,11 +35,10 @@ public class EmailManager : NSObject, MFMailComposeViewControllerDelegate {
                 }
                 composer.mailComposeDelegate = self
                 fromViewController.present(composer, animated: true, completion: nil)
+                return true
             }
         }
-        else {
-            print("Could not open email app")
-        }
+        return false
     }
     
     public func mailComposeController(_ controller: MFMailComposeViewController, didFinishWith result: MFMailComposeResult, error: Error?) {

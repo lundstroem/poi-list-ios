@@ -31,10 +31,8 @@ class PoiListViewController: UIViewController {
             }
             self.titleView.text = list.title
             self.infoView.text = list.info
-        } else {
-            if let navTitle = navItem {
-                navTitle.title = "New List"
-            }
+        } else if let navTitle = navItem {
+            navTitle.title = "New List"
         }
     }
     
@@ -55,7 +53,7 @@ class PoiListViewController: UIViewController {
         if let list = poiListModel {
             savePoiListModel(poiListModel: list, title: titleView.text, info: infoView.text, managedObjectContext: self.managedObjectContext)
         } else {
-            insertNewPoiListModel(title:titleView.text, info:infoView.text, timestamp:getTimestamp(), managedObjectContext: self.managedObjectContext)
+            insertNewPoiListModel(title: titleView.text, info: infoView.text, timestamp: timestampAsString(), managedObjectContext: self.managedObjectContext)
         }
         exit()
         dismiss(animated: true, completion: nil)

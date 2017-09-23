@@ -14,56 +14,29 @@ class PoiViewController: UIViewController {
 
     @IBOutlet weak var titleView: UITextField!
     @IBOutlet weak var infoView: UITextView!
-    @IBOutlet weak var toastView: UIView!
-    @IBOutlet weak var toastLabel: UILabel!
     var managedObjectContext: NSManagedObjectContext?
     var poiModel: PoiModel?
-    var toastFinished : Bool = true
    
     override func viewDidLoad() {
         super.viewDidLoad()
         let copyLinkButton = UIBarButtonItem(title: "link", style: .plain, target: self, action: #selector(copyLink(_:)))
         self.navigationItem.rightBarButtonItem = copyLinkButton
-        self.toastView.isHidden = true
         titleView.becomeFirstResponder()
     }
-
-    func savePoi() {
-        savePoiModel(poiModel: poiModel, title: self.titleView.text, info: self.infoView.text, lat:nil, long:nil, managedObjectContext: managedObjectContext)
-    }
     
-    func copyLink(_ sender: Any) {
+    @objc func copyLink(_ sender: Any) {
         if let model = poiModel {
             let gmapsUrl = "http://maps.google.com/maps?q=\(model.lat),\(model.long)+(Point))&z=14&11=\(model.lat),\(model.long)"
             UIPasteboard.general.string = gmapsUrl
-            showToast(text: "google maps link copied to clipboard")
+            showCopiedLinkDialog(url: gmapsUrl)
         }
     }
     
-    func showToast(text: String) {
-        if toastFinished {
-            toastFinished = false
-            toastView.isHidden = false
-            if let view = toastView {
-                UIView.animate(withDuration: 0.5, animations: {
-                    view.frame = CGRect(x:view.frame.origin.x, y:view.frame.origin.y+85, width:view.frame.width, height:view.frame.height)
-                }, completion: { (finished: Bool) in
-                    UIView.animate(withDuration: 2.0, animations: {
-                        view.frame = CGRect(x:view.frame.origin.x, y:view.frame.origin.y-1, width:view.frame.width, height:view.frame.height)
-                    }, completion: { (finished: Bool) in
-                        UIView.animate(withDuration: 0.5, animations: {
-                            view.frame = CGRect(x:view.frame.origin.x, y:view.frame.origin.y-85, width:view.frame.width, height:view.frame.height)
-                        }, completion: { (finished: Bool) in
-                            self.toastFinished = true
-                            self.toastView.isHidden = true
-                        })
-                    })
-                })
-                if let label = toastLabel {
-                    label.text = text
-                }
-            }
-        }
+    func showCopiedLinkDialog(url: String) {
+        let alertController = UIAlertController(title: "Google Maps link copied to clipboard", message: url, preferredStyle: .alert)
+        let cancelAction = UIAlertAction(title: "OK", style: .cancel)
+        alertController.addAction(cancelAction)
+        present(alertController, animated: true)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -75,7 +48,7 @@ class PoiViewController: UIViewController {
     }
     
     override func viewWillDisappear(_ animated: Bool) {
-        savePoi()
+        savePoiModel(poiModel: poiModel, title: self.titleView.text, info: self.infoView.text, lat: nil, long: nil, managedObjectContext: managedObjectContext)
     }
     
     override func didReceiveMemoryWarning() {

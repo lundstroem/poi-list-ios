@@ -49,7 +49,7 @@ class DetailViewController: UIViewController, MKMapViewDelegate, CLLocationManag
         if let list = poiListModel {
             self.navigationItem.title = list.title
         }
-        let pois = fetchPois(poiListModel:poiListModel, managedObjectContext: managedObjectContext)
+        let pois = fetchPois(poiListModel: poiListModel, managedObjectContext: managedObjectContext)
         addPinsToMap(poiModels: pois)
         let longPressGesture = UILongPressGestureRecognizer(target: self, action: #selector(mapViewLongpressed))
         mapView.addGestureRecognizer(longPressGesture)
@@ -96,17 +96,20 @@ class DetailViewController: UIViewController, MKMapViewDelegate, CLLocationManag
     }
     
     func sendMail(title: String, json: String) {
-        let appStoreLink = "<a href=\"https://itunes.apple.com/us/app/poi-list/id1240789342?ls=1&mt=8\">Get POI List from App Store</a>"
+        let appStoreLink = "<a href=\"https://itunes.apple.com/us/app/poi-list/id1240789342?ls=1&mt=8\">Get POI List from the App Store</a>"
         let body = appStoreLink + "<br /><br />Longpress on the attachment to copy it to POI List."
         if let manager = emailManager {
-            manager.sendMailTo(subject: "POI List: \(title)", body: body, attachment: json, fromViewController: self)
+            let success = manager.sendMailTo(subject: "POI List: \(title)", body: body, attachment: json, fromViewController: self)
+            if(!success) {
+                showMailErrorDialog()
+            }
         }
     }
     
     @IBAction func exportList(_ sender: Any) {
         if let list = poiListModel {
             let listTitle = list.title ?? "(no title)"
-            if let json = getPoiListAsJSON(poiListModel:poiListModel, managedObjectContext: managedObjectContext) {
+            if let json = poiListAsJSON(poiListModel:poiListModel, managedObjectContext: managedObjectContext) {
                 sendMail(title: listTitle, json: json)
             }
         }
@@ -134,13 +137,13 @@ class DetailViewController: UIViewController, MKMapViewDelegate, CLLocationManag
     }
     
     func savePoiModelForAnnotation(pin: MKAnnotation) {
-        if let poiModel = getModelForPin(pin:pin) {
+        if let poiModel = getModelForPin(pin: pin) {
             savePoiModel(poiModel: poiModel, title: pin.title!, info: pin.subtitle!, lat: pin.coordinate.latitude, long: pin.coordinate.longitude, managedObjectContext: self.managedObjectContext)
         }
     }
     
     func deletePoiModelForAnnotation(pin: MKAnnotation) {
-        if let poiModel = getModelForPin(pin:pin) {
+        if let poiModel = getModelForPin(pin: pin) {
             var index = 0
             for poiModelPin in pinsArray  {
                 if poiModelPin.pin === pin {
@@ -148,7 +151,7 @@ class DetailViewController: UIViewController, MKMapViewDelegate, CLLocationManag
                     pinsArray.remove(at: index)
                     break
                 }
-                index+=1
+                index += 1
             }
             deletePoiModel(poiModel: poiModel, managedObjectContext: managedObjectContext)
         }
@@ -163,7 +166,7 @@ class DetailViewController: UIViewController, MKMapViewDelegate, CLLocationManag
         return nil
     }
     
-    func mapViewLongpressed(gestureRecognizer: UIGestureRecognizer) {
+    @objc func mapViewLongpressed(gestureRecognizer: UIGestureRecognizer) {
         let touchPoint = gestureRecognizer.location(in: mapView)
         let coordinate = mapView.convert(touchPoint, toCoordinateFrom: mapView)
         if !alertShowing {
@@ -189,6 +192,13 @@ class DetailViewController: UIViewController, MKMapViewDelegate, CLLocationManag
         }
     }
 
+    func showMailErrorDialog() {
+        let alertController = UIAlertController(title: "Error", message: "Cannot find an email client", preferredStyle: .alert)
+        let cancelAction = UIAlertAction(title: "OK", style: .cancel)
+        alertController.addAction(cancelAction)
+        present(alertController, animated: true)
+    }
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }
@@ -212,12 +222,13 @@ class DetailViewController: UIViewController, MKMapViewDelegate, CLLocationManag
         if !initialZoom {
             initialZoom = true
             if ProcessInfo.processInfo.arguments.contains("UITEST") {
-                // zooming the map could fail the UI test when placing a pin. Is there a better way?
+                // avoid map zoom if running UI test.
             } else {
                 zoomMap()
             }
         }
     }
+    
     func mapView(_ mapView: MKMapView, didFailToLocateUserWithError error: Error) {}
     func mapView(_ mapView: MKMapView, didChange mode: MKUserTrackingMode, animated: Bool) {}
     
@@ -251,7 +262,7 @@ class DetailViewController: UIViewController, MKMapViewDelegate, CLLocationManag
     func mapView(_ mapView: MKMapView, didAdd views: [MKAnnotationView]) {}
     func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
         let poiModel = getModelForPin(pin: view.annotation!)
-        pushPinViewController(poiModel:poiModel!)
+        pushPinViewController(poiModel: poiModel!)
     }
     func pushPinViewController(poiModel: PoiModel) {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
@@ -275,10 +286,10 @@ class DetailViewController: UIViewController, MKMapViewDelegate, CLLocationManag
                 let xLabelPosY = xLabel.frame.origin.y + xLabel.frame.size.height
                 if globalPoint.x < xLabelPosX && globalPoint.y < xLabelPosY {
                     DispatchQueue.main.async {
-                        self.deletePoiModelForAnnotation(pin:view.annotation!)
+                        self.deletePoiModelForAnnotation(pin: view.annotation!)
                     }
                 } else {
-                    savePoiModelForAnnotation(pin:view.annotation!)
+                    savePoiModelForAnnotation(pin: view.annotation!)
                 }
                 xLabel.isHidden = true
             }

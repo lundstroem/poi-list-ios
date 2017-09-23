@@ -34,12 +34,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
             importActionCancel()
         }
         alertController.addAction(cancelAction)
-        let OKAction = UIAlertAction(title: "Save Copy", style: .default) { [weak self] action in
-            importActionSaveCopy(managedObjectContext: self?.managedObjectContext)
+        let OKAction = UIAlertAction(title: "Save Copy", style: .default) { [unowned self] action in
+            importActionSaveCopy(managedObjectContext: self.managedObjectContext)
         }
         alertController.addAction(OKAction)
-        let newSaveAction = UIAlertAction(title: "Overwrite", style: .destructive) { [weak self] action in
-            importActionOverwrite(managedObjectContext: self?.managedObjectContext)
+        let newSaveAction = UIAlertAction(title: "Overwrite", style: .destructive) { [unowned self] action in
+            importActionOverwrite(managedObjectContext: self.managedObjectContext)
         }
         alertController.addAction(newSaveAction)
         self.window?.rootViewController?.present(alertController, animated: true) {
@@ -47,14 +47,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
     }
     
     func application(_ app: UIApplication, open url: URL, options: [UIApplicationOpenURLOptionsKey : Any] = [:]) -> Bool {
-        if let contents = getStringContentResource(url:url) {
-            let state = importListFromData(contents:contents, managedObjectContext: managedObjectContext)
+        if let contents = stringContentResource(url:url) {
+            let state = importListFromJSONData(contents:contents, managedObjectContext: managedObjectContext)
             switch state {
                 case ImportState.success:
                     print("import success")
                 case ImportState.exists:
-                    if let poiList = getImportedList() {
-                        showActionLongpress(title:poiList.title)
+                    if let poiList = importedList() {
+                        showActionLongpress(title: poiList.title)
                     }
                 case ImportState.failed:
                     print("import failed")
@@ -89,7 +89,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
 
     // MARK: - Split view
 
-    func splitViewController(_ splitViewController: UISplitViewController, collapseSecondary secondaryViewController:UIViewController, onto primaryViewController:UIViewController) -> Bool {
+    func splitViewController(_ splitViewController: UISplitViewController, collapseSecondary secondaryViewController:UIViewController, onto primaryViewController: UIViewController) -> Bool {
         return true
     }
     // MARK: - Core Data stack
@@ -115,7 +115,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
                  * The store could not be migrated to the current model version.
                  Check the error message to determine what the actual problem was.
                  */
-                print("Unresolved error \(error.localizedDescription), \(error.userInfo)")
+                print("Persistent container error \(error.localizedDescription), \(error.userInfo)")
             }
         })
         return container
@@ -128,11 +128,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
         if context.hasChanges {
             do {
                 try context.save()
-            } catch {
+            } catch let error as NSError {
                 // Replace this implementation with code to handle the error appropriately.
                 // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-                let nserror = error as NSError
-                fatalError("Unresolved error \(nserror.localizedDescription), \(nserror.userInfo)")
+                
+                fatalError("Unresolved error \(error.localizedDescription), \(error.userInfo)")
             }
         }
     }

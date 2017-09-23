@@ -51,7 +51,8 @@ extension JSONSerializable {
         do {
             let data = try JSONSerialization.data(withJSONObject: representation, options: [])
             return String(data: data, encoding: .utf8)
-        } catch {
+        } catch let error as NSError {
+            print("Error serializing JSON: \(error.localizedDescription), \(error.userInfo)")
             return nil
         }
     }
@@ -71,21 +72,21 @@ struct Poi: JSONSerializable {
     var long: Double
 }
 
-func getPoiListAsJSON(poiListModel: PoiListModel?, managedObjectContext: NSManagedObjectContext?) -> String? {
+func poiListAsJSON(poiListModel: PoiListModel?, managedObjectContext: NSManagedObjectContext?) -> String? {
     if let list = poiListModel {
         if let moc = managedObjectContext {
-            let pois = fetchPois(poiListModel:poiListModel, managedObjectContext:moc)
+            let pois = fetchPois(poiListModel: poiListModel, managedObjectContext: moc)
             var poiModels: [Poi] = []
             for poi in pois {
                 var title = "title"
                 if let p_title = poi.title {
                     title = p_title
                 }
-                let info = "info"
+                var info = "info"
                 if let p_info = poi.info {
-                    title = p_info
+                    info = p_info
                 }
-                poiModels.insert(Poi(title:title, info:info, lat:poi.lat, long:poi.long), at: 0)
+                poiModels.insert(Poi(title: title, info: info, lat: poi.lat, long: poi.long), at: 0)
             }
             var title = "title"
             if let p_title = list.title {
@@ -143,13 +144,13 @@ func parsePoiListJSON(data: Data) -> PoiList? {
                 if let p_long = poi["long"] as? Double {
                     long = p_long
                 }
-                poiModels.insert(Poi(title:title, info:info, lat:lat, long:long), at: 0)
+                poiModels.insert(Poi(title: title, info: info, lat: lat, long: long), at: 0)
             }
-            let poiList = PoiList(title:title, info:info, timestamp:timestamp, pois: poiModels)
+            let poiList = PoiList(title: title, info: info, timestamp: timestamp, pois: poiModels)
             return poiList
         }
-    } catch {
-        print("Error deserializing JSON: \(error)")
+    } catch let error as NSError {
+        print("Error deserializing JSON: \(error.localizedDescription), \(error.userInfo)")
     }
     return nil
 }
@@ -162,8 +163,8 @@ func fetchPois(poiListModel: PoiListModel?, managedObjectContext: NSManagedObjec
             do {
                 let poisFetched = try moc.fetch(poiFetch) as! [PoiModel]
                 return poisFetched
-            } catch {
-                print("Failed to fetch POIs: \(error)")
+            } catch let error as NSError {
+                print("Failed to fetch POIs: \(error.localizedDescription), \(error.userInfo)")
             }
         }
     }
@@ -171,13 +172,14 @@ func fetchPois(poiListModel: PoiListModel?, managedObjectContext: NSManagedObjec
     return emptyArray
 }
 
-func getTimestamp() -> String {
-    let timestamp_double:Double = NSDate().timeIntervalSince1970 * 1000
-    let timestamp: String = "\(timestamp_double)"
+func timestampAsString() -> String {
+    let timestamp_double: Double = NSDate().timeIntervalSince1970 * 1000
+    let timestamp_int = Int(timestamp_double)
+    let timestamp: String = "\(timestamp_int)"
     return timestamp
 }
 
-func checkIfPoiListExists(poiList: PoiList, managedObjectContext: NSManagedObjectContext?) -> Bool {
+func poiListExists(poiList: PoiList, managedObjectContext: NSManagedObjectContext?) -> Bool {
     let poiListFetch = NSFetchRequest<NSFetchRequestResult>(entityName: "PoiListModel")
     if let moc = managedObjectContext {
         poiListFetch.predicate = NSPredicate(format: "timestamp == %@", poiList.timestamp)
@@ -186,14 +188,33 @@ func checkIfPoiListExists(poiList: PoiList, managedObjectContext: NSManagedObjec
             if poiListsFetched.count > 0 {
                 return true
             }
-        } catch {
-            print("Failed to check if PoiList exists: \(error)")
+        } catch let error as NSError {
+            print("Failed to check if PoiList exists: \(error.localizedDescription), \(error.userInfo)")
         }
     }
     return false
 }
 
-@discardableResult func deletePoiList(poiList: PoiList, managedObjectContext: NSManagedObjectContext?) -> Bool {
+func poiListModelForTimestamp(timestamp: String, managedObjectContext: NSManagedObjectContext?) -> PoiListModel? {
+    let poiListFetch = NSFetchRequest<NSFetchRequestResult>(entityName: "PoiListModel")
+    if let moc = managedObjectContext {
+        poiListFetch.predicate = NSPredicate(format: "timestamp == %@", timestamp)
+        do {
+            let poiListsFetched = try moc.fetch(poiListFetch) as! [PoiListModel]
+            if poiListsFetched.count == 1 {
+                return poiListsFetched.first
+            } else {
+                return nil
+            }
+        } catch let error as NSError {
+            print("Failed to check if PoiList exists: \(error.localizedDescription), \(error.userInfo)")
+            return nil
+        }
+    }
+    return nil
+}
+
+func deletePoiList(poiList: PoiList, managedObjectContext: NSManagedObjectContext?) -> Bool {
     let poiListFetch = NSFetchRequest<NSFetchRequestResult>(entityName: "PoiListModel")
     if let moc = managedObjectContext {
         poiListFetch.predicate = NSPredicate(format: "timestamp == %@", poiList.timestamp)
@@ -202,8 +223,8 @@ func checkIfPoiListExists(poiList: PoiList, managedObjectContext: NSManagedObjec
             if poiListsFetched.count > 0 {
                 deletePoiListModel(poiListModel: poiListsFetched[0], managedObjectContext: managedObjectContext)
             }
-        } catch {
-            print("Failed to delete PoiList: \(error)")
+        } catch let error as NSError {
+            print("Failed to delete PoiList: \(error.localizedDescription), \(error.userInfo)")
             return false
         }
         return true
@@ -216,9 +237,8 @@ func checkIfPoiListExists(poiList: PoiList, managedObjectContext: NSManagedObjec
         moc.delete(poiListModel)
         do {
             try moc.save()
-        } catch {
-            let nserror = error as NSError
-            print("Unresolved error \(nserror.localizedDescription), \(nserror.userInfo)")
+        } catch let error as NSError {
+            print("Failed to delete PoiListModel \(error.localizedDescription), \(error.userInfo)")
             return false
         }
         return true
@@ -231,9 +251,8 @@ func checkIfPoiListExists(poiList: PoiList, managedObjectContext: NSManagedObjec
         moc.delete(poiModel)
         do {
             try moc.save()
-        } catch {
-            let nserror = error as NSError
-            print("Unresolved error \(nserror.localizedDescription), \(nserror.userInfo)")
+        } catch let error as NSError {
+            print("Failed to delete PoiModel \(error.localizedDescription), \(error.userInfo)")
             return false
         }
         return true
@@ -241,15 +260,16 @@ func checkIfPoiListExists(poiList: PoiList, managedObjectContext: NSManagedObjec
     return false
 }
 
-@discardableResult func importPoiList(poiList: PoiList, managedObjectContext: NSManagedObjectContext?) -> Bool {
+func importPoiList(poiList: PoiList, managedObjectContext: NSManagedObjectContext?) -> Bool {
     if let moc = managedObjectContext {
         if let poiListModel = insertNewPoiListModel(title: poiList.title, info: poiList.info, timestamp: poiList.timestamp, managedObjectContext: moc) {
             for poi in poiList.pois as! [Poi] {
                 let poiModel = insertNewPoiModel(title: poi.title, info: poi.info, lat: poi.lat, long: poi.long, poiListModel: poiListModel, managedObjectContext: moc)
-                if poiModel != nil {
-                    return true
+                if poiModel == nil {
+                    return false
                 }
             }
+            return true
         }
     }
     return false
@@ -271,9 +291,8 @@ func checkIfPoiListExists(poiList: PoiList, managedObjectContext: NSManagedObjec
         if let moc = managedObjectContext {
             do {
                 try moc.save()
-            } catch {
-                let nserror = error as NSError
-                print("Unresolved error \(nserror.localizedDescription), \(nserror.userInfo)")
+            } catch let error as NSError{
+                print("Failed to save PoiModel \(error.localizedDescription), \(error.userInfo)")
                 return false
             }
             return true
@@ -288,9 +307,8 @@ func checkIfPoiListExists(poiList: PoiList, managedObjectContext: NSManagedObjec
         poiListModel.info = info
         do {
             try moc.save()
-        } catch {
-            let nserror = error as NSError
-            print("Unresolved error \(nserror.localizedDescription), \(nserror.userInfo)")
+        } catch let error as NSError {
+            print("Failed to save PoiListModel \(error.localizedDescription), \(error.userInfo)")
             return false
         }
         return true
@@ -298,7 +316,7 @@ func checkIfPoiListExists(poiList: PoiList, managedObjectContext: NSManagedObjec
     return false
 }
 
-@discardableResult func insertNewPoiModel(title: String?, info: String?, lat: Double, long: Double, poiListModel: PoiListModel?, managedObjectContext: NSManagedObjectContext?) -> PoiModel? {
+func insertNewPoiModel(title: String?, info: String?, lat: Double, long: Double, poiListModel: PoiListModel?, managedObjectContext: NSManagedObjectContext?) -> PoiModel? {
     if let moc = managedObjectContext {
         if let poiList = poiListModel {
             let newPoi = PoiModel(context: moc)
@@ -309,9 +327,9 @@ func checkIfPoiListExists(poiList: PoiList, managedObjectContext: NSManagedObjec
             newPoi.list = poiList
             do {
                 try moc.save()
-            } catch {
-                let nserror = error as NSError
-                print("Unresolved error \(nserror.localizedDescription), \(nserror.userInfo)")
+            } catch let error as NSError {
+                print("Failed to insert new PoiModel \(error.localizedDescription), \(error.userInfo)")
+                return nil
             }
             return newPoi
         }
@@ -327,9 +345,9 @@ func checkIfPoiListExists(poiList: PoiList, managedObjectContext: NSManagedObjec
         newPoiList.info = info
         do {
             try moc.save()
-        } catch {
-            let nserror = error as NSError
-            print("Unresolved error \(nserror.localizedDescription), \(nserror.userInfo)")
+        } catch let error as NSError {
+            print("Failed to insert new PoiListModel \(error.localizedDescription), \(error.userInfo)")
+            return nil
         }
         return newPoiList
     }
@@ -346,11 +364,12 @@ enum ImportState {
     case exists
 }
 
-func getStringContentResource(url: URL) -> String? {
+func stringContentResource(url: URL) -> String? {
     do {
         let contents = try String(contentsOf: url)
         return contents
-    } catch {
+    } catch let error as NSError {
+        print("Unresolved error \(error.localizedDescription), \(error.userInfo)")
         return nil
     }
 }
@@ -360,11 +379,10 @@ func importActionCancel() {
 }
 
 @discardableResult func importActionSaveCopy(managedObjectContext: NSManagedObjectContext?) -> Bool {
-    if importedPoiList == nil {
-        return false
+    if importedPoiList != nil {
+        importedPoiList?.title += " copy"
+        importedPoiList?.timestamp = timestampAsString()
     }
-    importedPoiList?.title += " copy"
-    importedPoiList?.timestamp = getTimestamp()
     if let poiList = importedPoiList {
         let result = importPoiList(poiList: poiList, managedObjectContext: managedObjectContext)
         importedPoiList = nil
@@ -385,19 +403,15 @@ func importActionCancel() {
     return false
 }
 
-func setImportedList(list: PoiList) {
-    importedPoiList = list
-}
-
-func getImportedList() -> PoiList? {
+func importedList() -> PoiList? {
     return importedPoiList
 }
 
-@discardableResult func importListFromData(contents: String, managedObjectContext: NSManagedObjectContext?) -> ImportState {
+@discardableResult func importListFromJSONData(contents: String, managedObjectContext: NSManagedObjectContext?) -> ImportState {
     if let data = contents.data(using: String.Encoding.utf8) {
         if let moc = managedObjectContext {
             if let poiList = parsePoiListJSON(data: data) {
-                let exists = checkIfPoiListExists(poiList: poiList, managedObjectContext: moc)
+                let exists = poiListExists(poiList: poiList, managedObjectContext: moc)
                 if exists {
                     importedPoiList = poiList
                     return ImportState.exists
@@ -414,6 +428,3 @@ func getImportedList() -> PoiList? {
     }
     return ImportState.failed
 }
-
-
-

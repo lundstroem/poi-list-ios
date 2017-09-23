@@ -22,7 +22,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     }
 
     override func viewWillAppear(_ animated: Bool) {
-        if let index = self.tableView.indexPathForSelectedRow{
+        if let index = self.tableView.indexPathForSelectedRow {
             self.tableView.deselectRow(at: index, animated: true)
         }
         super.viewWillAppear(animated)
@@ -32,7 +32,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         super.didReceiveMemoryWarning()
     }
 
-    func presentAddModal(_ sender: Any) {
+    @objc func presentAddModal(_ sender: Any) {
         let modalViewController = self.storyboard?.instantiateViewController(withIdentifier: "PoiListViewController") as! PoiListViewController
         modalViewController.modalPresentationStyle = .popover
         modalViewController.managedObjectContext = self.fetchedResultsController.managedObjectContext
@@ -46,7 +46,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "showDetail" {
             if let indexPath = self.tableView.indexPathForSelectedRow {
-            let object = self.fetchedResultsController.object(at: indexPath)
+                let object = self.fetchedResultsController.object(at: indexPath)
                 let controller = segue.destination as! DetailViewController
                 controller.managedObjectContext = self.fetchedResultsController.managedObjectContext
                 controller.poiListModel = object
@@ -85,9 +85,8 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
             context.delete(self.fetchedResultsController.object(at: indexPath))
             do {
                 try context.save()
-            } catch {
-                let nserror = error as NSError
-                print("Unresolved error \(nserror.localizedDescription), \(nserror.userInfo)")
+            } catch let error as NSError {
+                print("Unresolved error \(error.localizedDescription), \(error.userInfo)")
             }
         }
     }
@@ -108,14 +107,13 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         fetchRequest.fetchBatchSize = 20
         let sortDescriptor = NSSortDescriptor(key: "timestamp", ascending: false)
         fetchRequest.sortDescriptors = [sortDescriptor]
-        let aFetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: self.managedObjectContext!, sectionNameKeyPath: nil, cacheName: nil /*"Master"*/)
+        let aFetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: self.managedObjectContext!, sectionNameKeyPath: nil, cacheName: nil)
         aFetchedResultsController.delegate = self
         _fetchedResultsController = aFetchedResultsController
         do {
             try _fetchedResultsController!.performFetch()
-        } catch {
-             let nserror = error as NSError
-             print("Unresolved error \(nserror.localizedDescription), \(nserror.userInfo)")
+        } catch let error as NSError {
+             print("Fetched results controller failed \(error.localizedDescription), \(error.userInfo)")
         }
         return _fetchedResultsController!
     }    
@@ -161,6 +159,5 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
          self.tableView.reloadData()
      }
      */
-
 }
 
