@@ -10,9 +10,9 @@ import Foundation
 import UIKit
 import MessageUI
 
-public class EmailManager : NSObject, MFMailComposeViewControllerDelegate {
+public class EmailManager : NSObject {
   
-    var mailComposeViewController: MFMailComposeViewController?
+    private var mailComposeViewController: MFMailComposeViewController?
     
     public override init() {
         mailComposeViewController = MFMailComposeViewController()
@@ -29,9 +29,9 @@ public class EmailManager : NSObject, MFMailComposeViewControllerDelegate {
                 composer.setSubject(subject)
                 composer.setMessageBody(body, isHTML: true)
                 if let attach = attachment {
-                    let myNSString = attach as NSString
-                    let myNSData = myNSString.data(using: String.Encoding.utf8.rawValue)!
-                    composer.addAttachmentData(myNSData, mimeType: "application/json", fileName: "list.poilist")
+                    let attachmentNSString = attach as NSString
+                    let attachmentNSData = attachmentNSString.data(using: String.Encoding.utf8.rawValue)!
+                    composer.addAttachmentData(attachmentNSData, mimeType: "application/json", fileName: "list.poilist")
                 }
                 composer.mailComposeDelegate = self
                 fromViewController.present(composer, animated: true, completion: nil)
@@ -40,7 +40,11 @@ public class EmailManager : NSObject, MFMailComposeViewControllerDelegate {
         }
         return false
     }
-    
+}
+
+// MARK: MailComposeController delegate
+
+extension EmailManager : MFMailComposeViewControllerDelegate {
     public func mailComposeController(_ controller: MFMailComposeViewController, didFinishWith result: MFMailComposeResult, error: Error?) {
         controller.dismiss(animated: true) { () -> Void in
             self.cycleMailComposer()

@@ -21,19 +21,19 @@ class PoiListViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         titleView.becomeFirstResponder()
+        if let list = poiListModel {
+            if let navTitle = navItem {
+                navTitle.title = list.title
+            }
+            titleView.text = list.title
+            infoView.text = list.info
+        } else if let navTitle = navItem {
+            navTitle.title = "New List"
+        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        if let list = poiListModel {
-            if let navTitle = navItem {
-               navTitle.title = list.title
-            }
-            self.titleView.text = list.title
-            self.infoView.text = list.info
-        } else if let navTitle = navItem {
-            navTitle.title = "New List"
-        }
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -44,6 +44,15 @@ class PoiListViewController: UIViewController {
         super.didReceiveMemoryWarning()
     }
     
+    // MARK: - Private methods
+    
+    func exit() {
+        titleView.resignFirstResponder()
+        infoView.resignFirstResponder()
+    }
+    
+    // MARK: - Actions
+    
     @IBAction func cancelButtonPressed() {
         exit()
         dismiss(animated: true, completion: nil)
@@ -51,16 +60,11 @@ class PoiListViewController: UIViewController {
     
     @IBAction func doneButtonPressed() {
         if let list = poiListModel {
-            savePoiListModel(poiListModel: list, title: titleView.text, info: infoView.text, managedObjectContext: self.managedObjectContext)
+            savePoiListModel(poiListModel: list, title: titleView.text, info: infoView.text, managedObjectContext: managedObjectContext)
         } else {
-            insertNewPoiListModel(title: titleView.text, info: infoView.text, timestamp: timestampAsString(), managedObjectContext: self.managedObjectContext)
+            insertNewPoiListModel(title: titleView.text, info: infoView.text, timestamp: timestampAsString(), managedObjectContext: managedObjectContext)
         }
         exit()
         dismiss(animated: true, completion: nil)
-    }
-    
-    func exit() {
-        titleView.resignFirstResponder()
-        infoView.resignFirstResponder()
     }
 }

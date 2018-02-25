@@ -152,7 +152,7 @@ class poi_list_iosTests: XCTestCase {
             var poi3Info = ""
             var poi3Lat:Double = 0
             var poi3Long:Double = 0
-            var iteration = 0;
+            var iteration = 0
             if let pois = poiListModel.pois {
                 let poiArray:[PoiModel] = Array(pois) as! [PoiModel]
                 let sortedArray = poiArray.sorted(by:{$0.lat < $1.lat})
@@ -185,7 +185,7 @@ class poi_list_iosTests: XCTestCase {
             if state == ImportState.success {
                 print("import success")
                 if let importedPoiListModel:PoiListModel = poiListModelForTimestamp(timestamp:"1490786294051", managedObjectContext:moc) {
-                    var iteration = 0;
+                    var iteration = 0
                     XCTAssertTrue(importedPoiListModel.title == title)
                     XCTAssertTrue(importedPoiListModel.info == info)
                     XCTAssertTrue(importedPoiListModel.timestamp == timestamp)
