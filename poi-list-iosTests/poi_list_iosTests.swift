@@ -45,29 +45,29 @@ import CoreData
 @testable import poi_list_ios
 
 class poi_list_iosTests: XCTestCase {
-    
+
     override func setUp() {
         super.setUp()
         // Put setup code here. This method is called before the invocation of each test method in the class.
     }
-    
+
     override func tearDown() {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
         super.tearDown()
     }
-    
+
     func testExample() {
         // This is an example of a functional test case.
         // Use XCTAssert and related functions to verify your tests produce the correct results.
     }
-    
+
     func testImport() {
-        
+
         // import mock list
         let moc = setUpInMemoryManagedObjectContext()
-        let mock1 = Bundle.main.url(forResource: "mockList1", withExtension:"poilist", subdirectory:nil)
+        let mock1 = Bundle.main.url(forResource: "mockList1", withExtension: "poilist", subdirectory: nil)
         if let mock1ListString = stringContentResource(url: mock1!) {
-            let state = importListFromJSONData(contents:mock1ListString, managedObjectContext: moc)
+            let state = importListFromJSONData(contents: mock1ListString, managedObjectContext: moc)
             if state == ImportState.success {
                 print("import success")
             } else if state == ImportState.exists {
@@ -78,11 +78,11 @@ class poi_list_iosTests: XCTestCase {
         } else {
             XCTFail("mock list import error")
         }
-        
+
         // import same mock list, expected state is "exists"
-        let mock2 = Bundle.main.url(forResource: "mockList1", withExtension:"poilist", subdirectory:nil)
+        let mock2 = Bundle.main.url(forResource: "mockList1", withExtension: "poilist", subdirectory: nil)
         if let mock2ListString = stringContentResource(url: mock2!) {
-            let state = importListFromJSONData(contents:mock2ListString, managedObjectContext: moc)
+            let state = importListFromJSONData(contents: mock2ListString, managedObjectContext: moc)
             if state == ImportState.success {
                 XCTFail("expected importstate exists")
             } else if state == ImportState.exists {
@@ -93,18 +93,18 @@ class poi_list_iosTests: XCTestCase {
         } else {
             XCTFail("mock list import error")
         }
-        
+
         importActionCancel()
 
         let importResult = importActionSaveCopy(managedObjectContext: moc)
         if importResult {
             XCTFail("should not be able to save because we canceled the import.")
         }
-        
+
         // import same mock list again, expected state is "exists"
-        let mock3 = Bundle.main.url(forResource: "mockList1", withExtension:"poilist", subdirectory:nil)
+        let mock3 = Bundle.main.url(forResource: "mockList1", withExtension: "poilist", subdirectory: nil)
         if let mock3ListString = stringContentResource(url: mock3!) {
-            let state = importListFromJSONData(contents:mock3ListString, managedObjectContext: moc)
+            let state = importListFromJSONData(contents: mock3ListString, managedObjectContext: moc)
             if state == ImportState.success {
                 XCTFail("expected importstate exists")
             } else if state == ImportState.exists {
@@ -115,16 +115,16 @@ class poi_list_iosTests: XCTestCase {
         } else {
             XCTFail("mock list import error")
         }
-        
+
         let importResult1 = importActionSaveCopy(managedObjectContext: moc)
         if !importResult1 {
             XCTFail("could not save copy of list.")
         }
-        
+
         // import same mock list again
-        let mock4 = Bundle.main.url(forResource: "mockList1", withExtension:"poilist", subdirectory:nil)
+        let mock4 = Bundle.main.url(forResource: "mockList1", withExtension: "poilist", subdirectory: nil)
         if let mock4ListString = stringContentResource(url: mock4!) {
-            let state = importListFromJSONData(contents:mock4ListString, managedObjectContext: moc)
+            let state = importListFromJSONData(contents: mock4ListString, managedObjectContext: moc)
             if state == ImportState.success {
                 XCTFail("expected importstate exists")
             } else if state == ImportState.exists {
@@ -135,16 +135,18 @@ class poi_list_iosTests: XCTestCase {
         } else {
             XCTFail("mock list import error")
         }
-        
+
         let importResult2 = importActionOverwrite(managedObjectContext: moc)
         if !importResult2 {
             XCTFail("could not overwrite list.")
         }
-        
+
         // import new mock list
-        let mock5 = Bundle.main.url(forResource: "mockList2", withExtension:"poilist", subdirectory:nil)
+        let mock5 = Bundle.main.url(forResource: "mockList2",
+                                    withExtension: "poilist",
+                                    subdirectory: nil)
         if let mock5ListString = stringContentResource(url: mock5!) {
-            let state = importListFromJSONData(contents:mock5ListString, managedObjectContext: moc)
+            let state = importListFromJSONData(contents: mock5ListString, managedObjectContext: moc)
             if state == ImportState.success {
                 print("import success")
             } else if state == ImportState.exists {
@@ -155,28 +157,28 @@ class poi_list_iosTests: XCTestCase {
         } else {
             XCTFail("mock list import error")
         }
-        
+
         // check initial values of mockList2, export to JSON, import JSON, see if values remain the same.
-        if let poiListModel:PoiListModel = poiListModelForTimestamp(timestamp:"1490786294051", managedObjectContext:moc) {
+        if let poiListModel: PoiListModel = poiListModelForTimestamp(timestamp: "1490786294051",
+                                                                    managedObjectContext: moc) {
             let title = poiListModel.title
             let info = poiListModel.info
             let timestamp = poiListModel.timestamp
             var poi1Title = ""
             var poi1Info = ""
-            var poi1Lat:Double = 0
-            var poi1Long:Double = 0
+            var poi1Lat: Double = 0
+            var poi1Long: Double = 0
             var poi2Title = ""
             var poi2Info = ""
-            var poi2Lat:Double = 0
-            var poi2Long:Double = 0
+            var poi2Lat: Double = 0
+            var poi2Long: Double = 0
             var poi3Title = ""
             var poi3Info = ""
-            var poi3Lat:Double = 0
-            var poi3Long:Double = 0
+            var poi3Lat: Double = 0
+            var poi3Long: Double = 0
             var iteration = 0
-            if let pois = poiListModel.pois {
-                let poiArray:[PoiModel] = Array(pois) as! [PoiModel]
-                let sortedArray = poiArray.sorted(by:{$0.lat < $1.lat})
+            if let pois = poiListModel.pois, let poiArray: [PoiModel] = Array(pois) as? [PoiModel] {
+                let sortedArray = poiArray.sorted(by: {$0.lat < $1.lat})
                 for case let poiModel in sortedArray {
                     if iteration == 0 {
                         poi1Title = poiModel.title!
@@ -202,17 +204,17 @@ class poi_list_iosTests: XCTestCase {
             }
             let poiListjson = poiListAsJSON(poiListModel: poiListModel, managedObjectContext: moc)
             XCTAssertTrue(deletePoiListModel(poiListModel: poiListModel, managedObjectContext: moc))
-            let state = importListFromJSONData(contents:poiListjson!, managedObjectContext: moc)
+            let state = importListFromJSONData(contents: poiListjson!, managedObjectContext: moc)
             if state == ImportState.success {
                 print("import success")
-                if let importedPoiListModel:PoiListModel = poiListModelForTimestamp(timestamp:"1490786294051", managedObjectContext:moc) {
+                if let importedPoiListModel: PoiListModel = poiListModelForTimestamp(timestamp: "1490786294051",
+                                                                                    managedObjectContext: moc) {
                     var iteration = 0
                     XCTAssertTrue(importedPoiListModel.title == title)
                     XCTAssertTrue(importedPoiListModel.info == info)
                     XCTAssertTrue(importedPoiListModel.timestamp == timestamp)
-                    if let pois = importedPoiListModel.pois {
-                        let poiArray:[PoiModel] = Array(pois) as! [PoiModel]
-                        let sortedArray = poiArray.sorted(by:{$0.lat < $1.lat})
+                    if let pois = importedPoiListModel.pois, let poiArray: [PoiModel] = Array(pois) as? [PoiModel] {
+                        let sortedArray = poiArray.sorted(by: {$0.lat < $1.lat})
                         for case let poiModel in sortedArray {
                             if iteration == 0 {
                                 XCTAssertTrue(poiModel.title == poi1Title)
@@ -242,41 +244,49 @@ class poi_list_iosTests: XCTestCase {
             } else {
                 XCTFail("unexpected import state")
             }
-            
+
         } else {
             XCTFail("mock list with timestamp 1490786294051 not found")
         }
     }
-    
+
     func testCoreData() {
         // create PoiListModel
         let moc = setUpInMemoryManagedObjectContext()
         let poiListTitle = "poi list title"
         let poiListInfo = "poi list info"
         let poiListTimestamp = timestampAsString()
-        let poiListModel = insertNewPoiListModel(title: poiListTitle, info: poiListInfo, timestamp: poiListTimestamp, managedObjectContext: moc)
+        let poiListModel = insertNewPoiListModel(title: poiListTitle,
+                                                 info: poiListInfo,
+                                                 timestamp: poiListTimestamp,
+                                                 managedObjectContext: moc)
         XCTAssertTrue(poiListModel?.title == poiListTitle)
         XCTAssertTrue(poiListModel?.info == poiListInfo)
         XCTAssertTrue(poiListModel?.timestamp == poiListTimestamp)
-        
+
         // create PoiModel
         let poiTitle = "poi title"
         let poiInfo = "poi info"
         let poiLat = 40.741895
         let poiLong = -73.989308
-        let poiModel = insertNewPoiModel(title: poiTitle, info: poiInfo, lat: poiLat, long: poiLong, poiListModel: poiListModel, managedObjectContext: moc)
+        let poiModel = insertNewPoiModel(title: poiTitle,
+                                         info: poiInfo,
+                                         lat: poiLat,
+                                         long: poiLong,
+                                         poiListModel: poiListModel,
+                                         managedObjectContext: moc)
         XCTAssertTrue(poiModel?.title == poiTitle)
         XCTAssertTrue(poiModel?.info == poiInfo)
         XCTAssertTrue(poiModel?.lat == poiLat)
         XCTAssertTrue(poiModel?.long == poiLong)
-        
+
         // delete PoiModel
         XCTAssertTrue(deletePoiModel(poiModel: poiModel!, managedObjectContext: moc))
-        
+
         // delete PoiListModel
         XCTAssertTrue(deletePoiListModel(poiListModel: poiListModel!, managedObjectContext: moc))
     }
-    
+
     func testPerformanceExample() {
         // This is an example of a performance test case.
         self.measure {

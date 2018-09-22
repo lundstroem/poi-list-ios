@@ -31,20 +31,23 @@ import Foundation
 import UIKit
 import MessageUI
 
-public class EmailManager : NSObject {
-  
+public class EmailManager: NSObject {
+
     private var mailComposeViewController: MFMailComposeViewController?
-    
+
     public override init() {
         mailComposeViewController = MFMailComposeViewController()
     }
-    
+
     private func cycleMailComposer() {
         mailComposeViewController = nil
         mailComposeViewController = MFMailComposeViewController()
     }
-    
-    public func sendMailTo(subject:String, body:String, attachment:String?, fromViewController:UIViewController) -> Bool {
+
+    public func sendMailTo(subject: String,
+                           body: String,
+                           attachment: String?,
+                           fromViewController: UIViewController) -> Bool {
         if MFMailComposeViewController.canSendMail() {
             if let composer = mailComposeViewController {
                 composer.setSubject(subject)
@@ -65,11 +68,12 @@ public class EmailManager : NSObject {
 
 // MARK: MailComposeController delegate
 
-extension EmailManager : MFMailComposeViewControllerDelegate {
-    public func mailComposeController(_ controller: MFMailComposeViewController, didFinishWith result: MFMailComposeResult, error: Error?) {
+extension EmailManager: MFMailComposeViewControllerDelegate {
+    public func mailComposeController(_ controller: MFMailComposeViewController,
+                                      didFinishWith result: MFMailComposeResult,
+                                      error: Error?) {
         controller.dismiss(animated: true) { () -> Void in
             self.cycleMailComposer()
         }
     }
 }
-

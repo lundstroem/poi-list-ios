@@ -38,7 +38,7 @@ class PoiListViewController: UIViewController {
     @IBOutlet weak var navItem: UINavigationItem!
     var managedObjectContext: NSManagedObjectContext?
     var poiListModel: PoiListModel?
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         titleView.becomeFirstResponder()
@@ -52,38 +52,44 @@ class PoiListViewController: UIViewController {
             navTitle.title = "New List"
         }
     }
-    
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
     }
-    
+
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
     }
-    
+
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }
-    
+
     // MARK: - Private methods
-    
+
     func exit() {
         titleView.resignFirstResponder()
         infoView.resignFirstResponder()
     }
-    
+
     // MARK: - Actions
-    
+
     @IBAction func cancelButtonPressed() {
         exit()
         dismiss(animated: true, completion: nil)
     }
-    
+
     @IBAction func doneButtonPressed() {
         if let list = poiListModel {
-            savePoiListModel(poiListModel: list, title: titleView.text, info: infoView.text, managedObjectContext: managedObjectContext)
+            savePoiListModel(poiListModel: list,
+                             title: titleView.text,
+                             info: infoView.text,
+                             managedObjectContext: managedObjectContext)
         } else {
-            insertNewPoiListModel(title: titleView.text, info: infoView.text, timestamp: timestampAsString(), managedObjectContext: managedObjectContext)
+            insertNewPoiListModel(title: titleView.text,
+                                  info: infoView.text,
+                                  timestamp: timestampAsString(),
+                                  managedObjectContext: managedObjectContext)
         }
         exit()
         dismiss(animated: true, completion: nil)

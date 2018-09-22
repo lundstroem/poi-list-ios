@@ -49,22 +49,28 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         }
         super.viewWillAppear(animated)
     }
-    
+
     @objc func presentAddModal(_ sender: Any) {
-        let modalViewController = storyboard?.instantiateViewController(withIdentifier: "PoiListViewController") as! PoiListViewController
+        guard let modalViewController = storyboard?.instantiateViewController(withIdentifier: "PoiListViewController")
+            as? PoiListViewController else {
+            return
+        }
         modalViewController.modalPresentationStyle = .popover
         modalViewController.managedObjectContext = fetchedResultsController.managedObjectContext
         present(modalViewController, animated: true, completion: nil)
     }
 
     // MARK: - Private methods
-    
+
     private func makeFetchedResultsController() -> NSFetchedResultsController<PoiListModel> {
         let fetchRequest: NSFetchRequest<PoiListModel> = PoiListModel.fetchRequest()
         fetchRequest.fetchBatchSize = 20
         let sortDescriptor = NSSortDescriptor(key: JSONKey.timestamp, ascending: false)
         fetchRequest.sortDescriptors = [sortDescriptor]
-        let aFetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: managedObjectContext!, sectionNameKeyPath: nil, cacheName: nil)
+        let aFetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest,
+                                                                   managedObjectContext: managedObjectContext!,
+                                                                   sectionNameKeyPath: nil,
+                                                                   cacheName: nil)
         aFetchedResultsController.delegate = self
         do {
             try aFetchedResultsController.performFetch()
@@ -73,7 +79,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         }
         return aFetchedResultsController
     }
-    
+
     // MARK: - Segues
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -82,11 +88,12 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
                 return
             }
             let object = fetchedResultsController.object(at: indexPath)
-            let controller = segue.destination as! DetailViewController
-            controller.managedObjectContext = fetchedResultsController.managedObjectContext
-            controller.poiListModel = object
-            controller.navigationItem.leftBarButtonItem = splitViewController?.displayModeButtonItem
-            controller.navigationItem.leftItemsSupplementBackButton = true
+            if let controller = segue.destination as? DetailViewController {
+                controller.managedObjectContext = fetchedResultsController.managedObjectContext
+                controller.poiListModel = object
+                controller.navigationItem.leftBarButtonItem = splitViewController?.displayModeButtonItem
+                controller.navigationItem.leftItemsSupplementBackButton = true
+            }
         }
     }
 
@@ -112,7 +119,9 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         return true
     }
 
-    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+    override func tableView(_ tableView: UITableView,
+                            commit editingStyle: UITableViewCellEditingStyle,
+                            forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
             let context = fetchedResultsController.managedObjectContext
             context.delete(fetchedResultsController.object(at: indexPath))
@@ -127,36 +136,45 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     private func configureCell(_ cell: UITableViewCell, withEvent event: PoiListModel) {
         if let title = event.title {
             cell.textLabel!.text = title
-        }        
+        }
     }
 
     // MARK: - Fetched results controller
-    
+
     func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
         tableView.beginUpdates()
     }
 
-    func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange sectionInfo: NSFetchedResultsSectionInfo, atSectionIndex sectionIndex: Int, for type: NSFetchedResultsChangeType) {
+    func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>,
+                    didChange sectionInfo: NSFetchedResultsSectionInfo,
+                    atSectionIndex sectionIndex: Int,
+                    for type: NSFetchedResultsChangeType) {
         switch type {
-            case .insert:
-                tableView.insertSections(IndexSet(integer: sectionIndex), with: .fade)
-            case .delete:
-                tableView.deleteSections(IndexSet(integer: sectionIndex), with: .fade)
-            default:
-                return
+        case .insert:
+            tableView.insertSections(IndexSet(integer: sectionIndex), with: .fade)
+        case .delete:
+            tableView.deleteSections(IndexSet(integer: sectionIndex), with: .fade)
+        default:
+            return
         }
     }
 
-    func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?) {
+    func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>,
+                    didChange anObject: Any,
+                    at indexPath: IndexPath?,
+                    for type: NSFetchedResultsChangeType,
+                    newIndexPath: IndexPath?) {
         switch type {
-            case .insert:
-                tableView.insertRows(at: [newIndexPath!], with: .fade)
-            case .delete:
-                tableView.deleteRows(at: [indexPath!], with: .fade)
-            case .update:
-                configureCell(tableView.cellForRow(at: indexPath!)!, withEvent: anObject as! PoiListModel)
-            case .move:
-                tableView.moveRow(at: indexPath!, to: newIndexPath!)
+        case .insert:
+            tableView.insertRows(at: [newIndexPath!], with: .fade)
+        case .delete:
+            tableView.deleteRows(at: [indexPath!], with: .fade)
+        case .update:
+            if let anObject = anObject as? PoiListModel {
+                configureCell(tableView.cellForRow(at: indexPath!)!, withEvent: anObject)
+            }
+        case .move:
+            tableView.moveRow(at: indexPath!, to: newIndexPath!)
         }
     }
 
@@ -164,4 +182,3 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         tableView.endUpdates()
     }
 }
-

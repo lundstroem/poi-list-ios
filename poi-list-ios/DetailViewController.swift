@@ -42,7 +42,7 @@ class DetailViewController: UIViewController {
     var managedObjectContext: NSManagedObjectContext?
     var poiListModel: PoiListModel?
     var emailManager: EmailManager?
-    
+
     // Associate a PoiModel with a Pin
     private class PoiModelPin {
         var poiModel: PoiModel
@@ -52,7 +52,7 @@ class DetailViewController: UIViewController {
             self.pin = pin
         }
     }
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         definesPresentationContext = true
@@ -61,19 +61,19 @@ class DetailViewController: UIViewController {
         xLabel.isHidden = true
         initialZoom = false
     }
-    
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         initMap()
     }
-    
+
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         trackUserLocation()
     }
-    
+
     // MARK: - Private methods
-    
+
     private func initMap() {
         if let annotationsToRemove = mapView?.annotations.filter({ $0 !== mapView?.userLocation }) {
             mapView?.removeAnnotations(annotationsToRemove)
@@ -88,7 +88,7 @@ class DetailViewController: UIViewController {
         mapView.showsUserLocation = true
         locationManager.requestWhenInUseAuthorization()
     }
-    
+
     private func trackUserLocation() {
         if CLLocationManager.authorizationStatus() == .authorizedWhenInUse {
             mapView.showsUserLocation = true
@@ -96,7 +96,7 @@ class DetailViewController: UIViewController {
             CLLocationManager().requestWhenInUseAuthorization()
         }
     }
-    
+
     private func zoomMap() {
         var zoomRect = MKMapRectNull
         if let coordinate = mapView.userLocation.location {
@@ -110,21 +110,30 @@ class DetailViewController: UIViewController {
             zoomRect = MKMapRectUnion(zoomRect, pointRect)
         }
         let padding: CGFloat = 100
-        mapView.setVisibleMapRect(zoomRect, edgePadding:UIEdgeInsetsMake(padding, padding, padding, padding), animated: true)
+        mapView.setVisibleMapRect(zoomRect, edgePadding: UIEdgeInsets(top: padding,
+                                                                      left: padding,
+                                                                      bottom: padding,
+                                                                      right: padding), animated: true)
         mapView.delegate = self
     }
-    
+
     private func sendMail(title: String, json: String) {
-        let appStoreLink = "<a href=\"https://itunes.apple.com/us/app/poi-list/id1240789342?ls=1&mt=8\">Get POI List from the App Store</a>"
+        let appStoreLink = """
+                        <a href=\"https://itunes.apple.com/us/app/poi-list/id1240789342?ls=1&mt=8\">
+                        Get POI List from the App Store</a>
+                        """
         let body = appStoreLink + "<br /><br />Longpress on the attachment to copy it to POI List."
         if let manager = emailManager {
-            let success = manager.sendMailTo(subject: "POI List: \(title)", body: body, attachment: json, fromViewController: self)
-            if(!success) {
+            let success = manager.sendMailTo(subject: "POI List: \(title)",
+                body: body,
+                attachment: json,
+                fromViewController: self)
+            if !success {
                 presentMailErrorDialog()
             }
         }
     }
-    
+
     private func addPinsToMap(poiModels: [PoiModel]) {
         for poi in poiModels {
             addLocation(poiModel: poi)
@@ -137,90 +146,108 @@ class DetailViewController: UIViewController {
         pin.coordinate = location
         pin.title = poiModel.title
         pin.subtitle = poiModel.info
-        let poiPin = PoiModelPin(poiModel:poiModel, pin:pin)
+        let poiPin = PoiModelPin(poiModel: poiModel, pin: pin)
         pinsArray.append(poiPin)
         mapView.addAnnotation(pin)
     }
-    
-    private func addNewPoiModel(lat: CLLocationDegrees, long: CLLocationDegrees, title: String, info: String) -> PoiModel? {
-        return insertNewPoiModel(title: title, info: info, lat: lat, long: long, poiListModel: poiListModel, managedObjectContext: managedObjectContext)
+
+    private func addNewPoiModel(lat: CLLocationDegrees,
+                                long: CLLocationDegrees,
+                                title: String,
+                                info: String) -> PoiModel? {
+        return insertNewPoiModel(title: title,
+                                 info: info,
+                                 lat: lat,
+                                 long: long,
+                                 poiListModel: poiListModel,
+                                 managedObjectContext: managedObjectContext)
     }
-    
+
     private func savePoiModelForAnnotation(pin: MKAnnotation) {
         if let poiModel = modelForPin(pin: pin) {
-            savePoiModel(poiModel: poiModel, title: pin.title!, info: pin.subtitle!, lat: pin.coordinate.latitude, long: pin.coordinate.longitude, managedObjectContext: managedObjectContext)
+            savePoiModel(poiModel: poiModel,
+                         title: pin.title!,
+                         info: pin.subtitle!,
+                         lat: pin.coordinate.latitude,
+                         long: pin.coordinate.longitude,
+                         managedObjectContext: managedObjectContext)
         }
     }
-    
+
     private func deletePoiModelForAnnotation(pin: MKAnnotation) {
         if let poiModel = modelForPin(pin: pin) {
-            for (index, poiModelPin) in pinsArray.enumerated() {
-                if poiModelPin.pin === pin {
-                    mapView.removeAnnotation(pin)
-                    pinsArray.remove(at: index)
-                    break
-                }
+            for (index, poiModelPin) in pinsArray.enumerated() where poiModelPin.pin === pin {
+                mapView.removeAnnotation(pin)
+                pinsArray.remove(at: index)
+                break
             }
             deletePoiModel(poiModel: poiModel, managedObjectContext: managedObjectContext)
         }
     }
-    
+
     private func modelForPin(pin: MKAnnotation) -> PoiModel? {
-        for poiModelPin in pinsArray  {
-            if poiModelPin.pin === pin {
-                return poiModelPin.poiModel
-            }
+        for poiModelPin in pinsArray where poiModelPin.pin === pin {
+            return poiModelPin.poiModel
         }
         return nil
     }
 
     // MARK: Actions
-    
+
     @IBAction func exportList(_ sender: Any) {
-        if let list = poiListModel, let json = poiListAsJSON(poiListModel:poiListModel, managedObjectContext: managedObjectContext) {
+        if let list = poiListModel, let json = poiListAsJSON(poiListModel: poiListModel,
+                                                             managedObjectContext: managedObjectContext) {
             let listTitle = list.title ?? "(no title)"
             sendMail(title: listTitle, json: json)
         }
     }
-    
+
     @objc func mapViewLongpressed(gestureRecognizer: UIGestureRecognizer) {
         let touchPoint = gestureRecognizer.location(in: mapView)
         let coordinate = mapView.convert(touchPoint, toCoordinateFrom: mapView)
         if !alertShowing {
             alertShowing = true
-            showActionLongpress(location:coordinate)
+            showActionLongpress(location: coordinate)
         }
     }
-    
+
     @IBAction func presentEditModal(_ sender: Any) {
-        guard let moc = managedObjectContext else {
+        guard let moc = managedObjectContext,
+        let modalViewController = storyboard?.instantiateViewController(
+            withIdentifier: "PoiListViewController") as? PoiListViewController
+            else {
             return
         }
-        let modalViewController = storyboard?.instantiateViewController(withIdentifier: "PoiListViewController") as! PoiListViewController
         modalViewController.modalPresentationStyle = .popover
         modalViewController.managedObjectContext = moc
         modalViewController.poiListModel = poiListModel
         present(modalViewController, animated: true, completion: nil)
     }
-    
+
     // MARK: View transitions
-    
+
     private func pushPinViewController(poiModel: PoiModel) {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        let poiViewController = storyboard.instantiateViewController(withIdentifier: "PoiViewController") as! PoiViewController
+        guard let poiViewController = storyboard.instantiateViewController(
+            withIdentifier: "PoiViewController") as? PoiViewController else {
+            return
+        }
         poiViewController.poiModel = poiModel
         poiViewController.managedObjectContext = managedObjectContext
         navigationController?.pushViewController(poiViewController, animated: true)
     }
-    
+
     private func showActionLongpress(location: CLLocationCoordinate2D) {
         let alertController = UIAlertController(title: nil, message: "Add pin?", preferredStyle: .actionSheet)
-        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel) { [unowned self] action in
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel) { [unowned self] _ in
             self.alertShowing = false
         }
         alertController.addAction(cancelAction)
-        let OKAction = UIAlertAction(title: "OK", style: .default) { [unowned self] action in
-            if let poiModel = self.addNewPoiModel(lat: location.latitude, long: location.longitude, title: "title", info: "info") {
+        let OKAction = UIAlertAction(title: "OK", style: .default) { [unowned self] _ in
+            if let poiModel = self.addNewPoiModel(lat: location.latitude,
+                                                  long: location.longitude,
+                                                  title: "title",
+                                                  info: "info") {
                 self.addLocation(poiModel: poiModel)
             }
             self.alertShowing = false
@@ -228,9 +255,11 @@ class DetailViewController: UIViewController {
         alertController.addAction(OKAction)
         present(alertController, animated: true)
     }
-    
+
     private func presentMailErrorDialog() {
-        let alertController = UIAlertController(title: "Error", message: "Cannot find an email client", preferredStyle: .alert)
+        let alertController = UIAlertController(title: "Error",
+                                                message: "Cannot find an email client",
+                                                preferredStyle: .alert)
         let cancelAction = UIAlertAction(title: "OK", style: .cancel)
         alertController.addAction(cancelAction)
         present(alertController, animated: true)
@@ -251,9 +280,9 @@ extension DetailViewController: MKMapViewDelegate {
             }
         }
     }
-    
+
     // MARK: - Managing Annotation Views
-    
+
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
         if annotation is MKUserLocation {
             return nil
@@ -266,18 +295,19 @@ extension DetailViewController: MKMapViewDelegate {
             pinView!.canShowCallout = true
             pinView!.animatesDrop = true
             pinView!.isDraggable = true
-        }
-        else {
+        } else {
             pinView!.annotation = annotation
         }
         return pinView
     }
-    
-    func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
+
+    func mapView(_ mapView: MKMapView,
+                 annotationView view: MKAnnotationView,
+                 calloutAccessoryControlTapped control: UIControl) {
         let poiModel = modelForPin(pin: view.annotation!)
         pushPinViewController(poiModel: poiModel!)
     }
-    
+
     // MARK: - Dragging an Annotation View
     func mapView(_ mapView: MKMapView,
                  annotationView view: MKAnnotationView,
@@ -307,7 +337,9 @@ extension DetailViewController: MKMapViewDelegate {
 // MARK: - Location Manager
 
 extension DetailViewController: CLLocationManagerDelegate {
-    private func locationManager(manager: CLLocationManager, didChangeAuthorizationStatus status: CLAuthorizationStatus) {
+    private func locationManager(manager: CLLocationManager,
+                                 didChangeAuthorizationStatus
+                                 status: CLAuthorizationStatus) {
         guard status == .authorizedWhenInUse else {
             print("location not enabled")
             return
