@@ -31,19 +31,18 @@ import Foundation
 import CoreData
 
 func fetchPois(poiListModel: PoiListModel?, managedObjectContext: NSManagedObjectContext?) -> [PoiModel] {
-    let poiFetch = NSFetchRequest<NSFetchRequestResult>(entityName: "PoiModel")
-    if let moc = managedObjectContext {
-        if let listModel = poiListModel {
-            poiFetch.predicate = NSPredicate(format: "list == %@", listModel)
-            do {
-                let poisFetched = try moc.fetch(poiFetch) as! [PoiModel]
-                return poisFetched
-            } catch let error as NSError {
-                print("Failed to fetch POIs: \(error.localizedDescription), \(error.userInfo)")
-            }
-        }
-    }
     let emptyArray: [PoiModel] = []
+    guard let moc = managedObjectContext, let listModel = poiListModel else {
+        return emptyArray
+    }
+    let poiFetch = NSFetchRequest<NSFetchRequestResult>(entityName: "PoiModel")
+    poiFetch.predicate = NSPredicate(format: "list == %@", listModel)
+    do {
+        let poisFetched = try moc.fetch(poiFetch) as! [PoiModel]
+        return poisFetched
+    } catch let error as NSError {
+        print("Failed to fetch POIs: \(error.localizedDescription), \(error.userInfo)")
+    }
     return emptyArray
 }
 
@@ -55,17 +54,18 @@ func timestampAsString() -> String {
 }
 
 func poiListExists(poiList: PoiList, managedObjectContext: NSManagedObjectContext?) -> Bool {
+    guard let moc = managedObjectContext else {
+        return false
+    }
     let poiListFetch = NSFetchRequest<NSFetchRequestResult>(entityName: "PoiListModel")
-    if let moc = managedObjectContext {
-        poiListFetch.predicate = NSPredicate(format: "timestamp == %@", poiList.timestamp)
-        do {
-            let poiListsFetched = try moc.fetch(poiListFetch) as! [PoiListModel]
-            if poiListsFetched.count > 0 {
-                return true
-            }
-        } catch let error as NSError {
-            print("Failed to check if PoiList exists: \(error.localizedDescription), \(error.userInfo)")
+    poiListFetch.predicate = NSPredicate(format: "timestamp == %@", poiList.timestamp)
+    do {
+        let poiListsFetched = try moc.fetch(poiListFetch) as! [PoiListModel]
+        if poiListsFetched.count > 0 {
+            return true
         }
+    } catch let error as NSError {
+        print("Failed to check if PoiList exists: \(error.localizedDescription), \(error.userInfo)")
     }
     return false
 }
@@ -135,40 +135,48 @@ extension JSONSerializable {
     }
 }
 
+struct JSONKey {
+    static let pois = "pois"
+    static let title = "title"
+    static let info = "info"
+    static let lat = "lat"
+    static let long = "long"
+    static let timestamp = "timestamp"
+}
+
 func poiListAsJSON(poiListModel: PoiListModel?, managedObjectContext: NSManagedObjectContext?) -> String? {
-    if let list = poiListModel {
-        if let moc = managedObjectContext {
-            let pois = fetchPois(poiListModel: poiListModel, managedObjectContext: moc)
-            var poiModels: [Poi] = []
-            for poi in pois {
-                var title = "title"
-                if let p_title = poi.title {
-                    title = p_title
-                }
-                var info = "info"
-                if let p_info = poi.info {
-                    info = p_info
-                }
-                poiModels.insert(Poi(title: title, info: info, lat: poi.lat, long: poi.long), at: 0)
-            }
-            var title = "title"
-            if let p_title = list.title {
-                title = p_title
-            }
-            var info = "info"
-            if let p_info = list.info {
-                info = p_info
-            }
-            var timestamp = "timestamp"
-            if let p_timestamp = list.timestamp {
-                timestamp = p_timestamp
-            }
-            let list = PoiList(title: title, info:info, timestamp: timestamp, pois:poiModels)
-            if let json = list.toJSON() {
-                print(json)
-                return json
-            }
+    guard let poiListModel = poiListModel, let moc = managedObjectContext else {
+        return nil
+    }
+    let pois = fetchPois(poiListModel: poiListModel, managedObjectContext: moc)
+    var poiModels: [Poi] = []
+    for poi in pois {
+        var title = JSONKey.title
+        if let p_title = poi.title {
+            title = p_title
         }
+        var info = JSONKey.info
+        if let p_info = poi.info {
+            info = p_info
+        }
+        poiModels.insert(Poi(title: title, info: info, lat: poi.lat, long: poi.long), at: 0)
+    }
+    var title = JSONKey.title
+    if let p_title = poiListModel.title {
+        title = p_title
+    }
+    var info = JSONKey.info
+    if let p_info = poiListModel.info {
+        info = p_info
+    }
+    var timestamp = JSONKey.timestamp
+    if let p_timestamp = poiListModel.timestamp {
+        timestamp = p_timestamp
+    }
+    let poiList = PoiList(title: title, info:info, timestamp: timestamp, pois:poiModels)
+    if let json = poiList.toJSON() {
+        print(json)
+        return json
     }
     return nil
 }
@@ -177,34 +185,34 @@ private func parsePoiListJSON(data: Data) -> PoiList? {
     do {
         if let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
             let pois = json["pois"] as? [[String: Any]] {
-            var title = "title"
-            if let p_title = json["title"] as? String {
+            var title = JSONKey.title
+            if let p_title = json[JSONKey.title] as? String {
                 title = p_title
             }
-            var info = "info"
-            if let p_info = json["info"] as? String {
+            var info = JSONKey.info
+            if let p_info = json[JSONKey.info] as? String {
                 info = p_info
             }
-            var timestamp = "timestamp"
-            if let p_timestamp = json["timestamp"] as? String {
+            var timestamp = JSONKey.timestamp
+            if let p_timestamp = json[JSONKey.timestamp] as? String {
                 timestamp = p_timestamp
             }
             var poiModels: [Poi] = []
             for poi in pois {
-                var title = "title"
-                if let p_title = poi["title"] as? String {
+                var title = JSONKey.title
+                if let p_title = poi[JSONKey.title] as? String {
                     title = p_title
                 }
-                var info = "info"
-                if let p_info = poi["info"] as? String {
+                var info = JSONKey.info
+                if let p_info = poi[JSONKey.info] as? String {
                     info = p_info
                 }
                 var lat: Double = 0
-                if let p_lat = poi["lat"] as? Double {
+                if let p_lat = poi[JSONKey.lat] as? Double {
                     lat = p_lat
                 }
                 var long: Double = 0
-                if let p_long = poi["long"] as? Double {
+                if let p_long = poi[JSONKey.long] as? Double {
                     long = p_long
                 }
                 poiModels.insert(Poi(title: title, info: info, lat: lat, long: long), at: 0)
@@ -223,7 +231,7 @@ private func parsePoiListJSON(data: Data) -> PoiList? {
 func poiListModelForTimestamp(timestamp: String, managedObjectContext: NSManagedObjectContext?) -> PoiListModel? {
     let poiListFetch = NSFetchRequest<NSFetchRequestResult>(entityName: "PoiListModel")
     if let moc = managedObjectContext {
-        poiListFetch.predicate = NSPredicate(format: "timestamp == %@", timestamp)
+        poiListFetch.predicate = NSPredicate(format: "\(JSONKey.timestamp) == %@", timestamp)
         do {
             let poiListsFetched = try moc.fetch(poiListFetch) as! [PoiListModel]
             if poiListsFetched.count == 1 {
@@ -303,7 +311,7 @@ func insertNewPoiModel(title: String?, info: String?, lat: Double, long: Double,
             poi.long = longitude
         }
         if poi.title == nil || poi.title == "" {
-            poi.title = "title"
+            poi.title = JSONKey.title
         }
         if let moc = managedObjectContext {
             do {
@@ -349,7 +357,7 @@ func insertNewPoiModel(title: String?, info: String?, lat: Double, long: Double,
 private func deletePoiList(poiList: PoiList, managedObjectContext: NSManagedObjectContext?) -> Bool {
     let poiListFetch = NSFetchRequest<NSFetchRequestResult>(entityName: "PoiListModel")
     if let moc = managedObjectContext {
-        poiListFetch.predicate = NSPredicate(format: "timestamp == %@", poiList.timestamp)
+        poiListFetch.predicate = NSPredicate(format: "\(JSONKey.timestamp) == %@", poiList.timestamp)
         do {
             let poiListsFetched = try moc.fetch(poiListFetch) as! [PoiListModel]
             if poiListsFetched.count > 0 {

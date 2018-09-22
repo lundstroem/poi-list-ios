@@ -62,7 +62,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     private func makeFetchedResultsController() -> NSFetchedResultsController<PoiListModel> {
         let fetchRequest: NSFetchRequest<PoiListModel> = PoiListModel.fetchRequest()
         fetchRequest.fetchBatchSize = 20
-        let sortDescriptor = NSSortDescriptor(key: "timestamp", ascending: false)
+        let sortDescriptor = NSSortDescriptor(key: JSONKey.timestamp, ascending: false)
         fetchRequest.sortDescriptors = [sortDescriptor]
         let aFetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: managedObjectContext!, sectionNameKeyPath: nil, cacheName: nil)
         aFetchedResultsController.delegate = self
@@ -78,14 +78,15 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "showDetail" {
-            if let indexPath = tableView.indexPathForSelectedRow {
-                let object = fetchedResultsController.object(at: indexPath)
-                let controller = segue.destination as! DetailViewController
-                controller.managedObjectContext = fetchedResultsController.managedObjectContext
-                controller.poiListModel = object
-                controller.navigationItem.leftBarButtonItem = splitViewController?.displayModeButtonItem
-                controller.navigationItem.leftItemsSupplementBackButton = true
+            guard let indexPath = tableView.indexPathForSelectedRow else {
+                return
             }
+            let object = fetchedResultsController.object(at: indexPath)
+            let controller = segue.destination as! DetailViewController
+            controller.managedObjectContext = fetchedResultsController.managedObjectContext
+            controller.poiListModel = object
+            controller.navigationItem.leftBarButtonItem = splitViewController?.displayModeButtonItem
+            controller.navigationItem.leftItemsSupplementBackButton = true
         }
     }
 

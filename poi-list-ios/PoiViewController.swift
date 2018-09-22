@@ -46,23 +46,27 @@ class PoiViewController: UIViewController {
     }
     
     override func viewWillAppear(_ animated: Bool) {
-        if let poi = poiModel {
-            titleView.text = poi.title
-            infoView.text = poi.info
-            navigationItem.title = titleView.text
+        super.viewWillAppear(animated)
+        guard let poi = poiModel else {
+            return
         }
+        titleView.text = poi.title
+        infoView.text = poi.info
+        navigationItem.title = titleView.text
     }
     
     override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
         savePoiModel(poiModel: poiModel, title: titleView.text, info: infoView.text, lat: nil, long: nil, managedObjectContext: managedObjectContext)
     }
     
     @objc func copyLink(_ sender: Any) {
-        if let model = poiModel {
-            let gmapsUrl = "http://maps.google.com/maps?q=\(model.lat),\(model.long)+(Point))&z=14&11=\(model.lat),\(model.long)"
-            UIPasteboard.general.string = gmapsUrl
-            presentCopiedLinkAlert(url: gmapsUrl)
+        guard let model = poiModel else {
+            return
         }
+        let gmapsUrl = "http://maps.google.com/maps?q=\(model.lat),\(model.long)+(Point))&z=14&11=\(model.lat),\(model.long)"
+        UIPasteboard.general.string = gmapsUrl
+        presentCopiedLinkAlert(url: gmapsUrl)
     }
     
     private func presentCopiedLinkAlert(url: String) {

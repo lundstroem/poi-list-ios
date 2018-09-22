@@ -110,18 +110,22 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     func showAlertControllerForDuplicate(title: String) {
         let alertController = UIAlertController(title: nil, message: "A list called \(title) with the same timestamp already exists.", preferredStyle: .actionSheet)
+        
         let cancelAction = UIAlertAction(title: "Cancel", style: .cancel) { action in
             importActionCancel()
         }
         alertController.addAction(cancelAction)
+        
         let OKAction = UIAlertAction(title: "Save Copy", style: .default) { [unowned self] action in
             importActionSaveCopy(managedObjectContext: self.managedObjectContext)
         }
         alertController.addAction(OKAction)
+        
         let newSaveAction = UIAlertAction(title: "Overwrite", style: .destructive) { [unowned self] action in
             importActionOverwrite(managedObjectContext: self.managedObjectContext)
         }
         alertController.addAction(newSaveAction)
+        
         window?.rootViewController?.present(alertController, animated: true) {
         }
     }

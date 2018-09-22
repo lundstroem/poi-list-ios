@@ -154,14 +154,12 @@ class DetailViewController: UIViewController {
     
     private func deletePoiModelForAnnotation(pin: MKAnnotation) {
         if let poiModel = modelForPin(pin: pin) {
-            var index = 0
-            for poiModelPin in pinsArray {
+            for (index, poiModelPin) in pinsArray.enumerated() {
                 if poiModelPin.pin === pin {
                     mapView.removeAnnotation(pin)
                     pinsArray.remove(at: index)
                     break
                 }
-                index += 1
             }
             deletePoiModel(poiModel: poiModel, managedObjectContext: managedObjectContext)
         }
@@ -195,13 +193,14 @@ class DetailViewController: UIViewController {
     }
     
     @IBAction func presentEditModal(_ sender: Any) {
-        if let moc = managedObjectContext {
-            let modalViewController = storyboard?.instantiateViewController(withIdentifier: "PoiListViewController") as! PoiListViewController
-            modalViewController.modalPresentationStyle = .popover
-            modalViewController.managedObjectContext = moc
-            modalViewController.poiListModel = poiListModel
-            present(modalViewController, animated: true, completion: nil)
+        guard let moc = managedObjectContext else {
+            return
         }
+        let modalViewController = storyboard?.instantiateViewController(withIdentifier: "PoiListViewController") as! PoiListViewController
+        modalViewController.modalPresentationStyle = .popover
+        modalViewController.managedObjectContext = moc
+        modalViewController.poiListModel = poiListModel
+        present(modalViewController, animated: true, completion: nil)
     }
     
     // MARK: View transitions
