@@ -44,7 +44,7 @@ import XCTest
 import CoreData
 @testable import poi_list_ios
 
-class poi_list_iosTests: XCTestCase {
+class PoiListIosTests: XCTestCase {
 
     override func setUp() {
         super.setUp()

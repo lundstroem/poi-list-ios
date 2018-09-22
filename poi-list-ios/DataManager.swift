@@ -409,7 +409,10 @@ private func importPoiList(poiList: PoiList, managedObjectContext: NSManagedObje
                                                     info: poiList.info,
                                                     timestamp: poiList.timestamp,
                                                     managedObjectContext: moc) {
-            for poi in poiList.pois as! [Poi] {
+            guard let pois = poiList.pois as? [Poi] else {
+                return false
+            }
+            for poi in pois {
                 let poiModel = insertNewPoiModel(title: poi.title,
                                                  info: poi.info,
                                                  lat: poi.lat,

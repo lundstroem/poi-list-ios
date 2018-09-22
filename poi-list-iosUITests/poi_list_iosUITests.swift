@@ -29,7 +29,7 @@
 
 import XCTest
 
-class poi_list_iosUITests: XCTestCase {
+class PoiListIosUITests: XCTestCase {
 
     override func setUp() {
         super.setUp()
