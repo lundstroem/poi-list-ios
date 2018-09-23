@@ -85,6 +85,8 @@ class DetailViewController: UIViewController {
         addPinsToMap(poiModels: pois)
         let longPressGesture = UILongPressGestureRecognizer(target: self, action: #selector(mapViewLongpressed))
         mapView.addGestureRecognizer(longPressGesture)
+        mapView.isAccessibilityElement = true
+        mapView.accessibilityLabel = "mapView"
         mapView.showsUserLocation = true
         locationManager.requestWhenInUseAuthorization()
     }

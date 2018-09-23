@@ -206,6 +206,7 @@
 				03C2DED11E5094B500CFDA3E /* Sources */,
 				03C2DED21E5094B500CFDA3E /* Frameworks */,
 				03C2DED31E5094B500CFDA3E /* Resources */,
+				039B39ED215786ED0049976A /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -315,6 +316,23 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\nif which swiftlint >/dev/null; then\nswiftlint\nelse\necho \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi\n";
+		};
+		039B39ED215786ED0049976A /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\n# xcrun simctl uninstall booted com.harrylundstrom.poilist\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
