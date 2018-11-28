@@ -35,6 +35,8 @@
     Save Copy: A list with a new name should be created.
     Overwrite: The existing list should be replaced with the new one.
  
+ - Add pin to map, add and edit info.
+ 
  - Move pin to red X on map:
     The pin should be deleted.
  

@@ -77,62 +77,6 @@ class PoiListIosUITests: XCTestCase {
         tablesQuery.buttons["Delete"].tap()
     }
 
-    /* TODO: Test broken since last update, fix or remove it.
-    func testAddAndEditPin() {
-
-        // create
-        let app = XCUIApplication()
-        let poiListNavigationBar = app.navigationBars["POI List"]
-        poiListNavigationBar.buttons["Add"].tap()
-        app.textFields["title"].typeText("poi-list-title")
-        let textView = app.children(matching: .window).element(boundBy: 0)
-            .children(matching: .other)
-            .element.children(matching: .other)
-            .element.children(matching: .textView).element
-        textView.tap()
-        textView.typeText("poi-list-description")
-        app.navigationBars["New List"].buttons["Done"].tap()
-
-        // go to detailview
-        app.tables.children(matching: .cell).element(boundBy: 0).tap()
-
-        // if on a fresh install, this dialog needs to be dismissed or the test will fail.
-        if app.alerts.element.collectionViews.buttons["Allow"].exists {
-            app.alerts.element.collectionViews.buttons["Allow"].tap()
-        }
-
-        // add pin
-        let map = app.otherElements.containing(.navigationBar, identifier: "poi-list-title").children(matching: .other)
-            .element.children(matching: .other)
-            .element.children(matching: .other).element.children(matching: .other)
-            .element.children(matching: .other).element.children(matching: .map).element
-        map.press(forDuration: 2.0)
-        app.sheets.buttons["OK"].tap()
-
-        // edit pin
-        app.otherElements["title, info"].tap()
-        app.buttons["More Info"].tap()
-        app.textFields.containing(.button, identifier: "Clear text").element.typeText("y")
-
-        let textView2 = app.textViews["info"]
-        textView2.tap()
-        textView2.typeText("y")
-        app.navigationBars["title"].buttons["poi-list-title"].tap()
-
-        // check if title and info has been updated
-        app.otherElements["titley, yinfo"].tap()
-
-        // go back
-        app.navigationBars["poi-list-title"].buttons["POI List"].tap()
-
-        // remove list
-        poiListNavigationBar.buttons["Edit"].tap()
-        let tablesQuery = app.tables
-        tablesQuery.buttons["Delete poi-list-title"].tap()
-        tablesQuery.buttons["Delete"].tap()
-    }
-*/
-
     func testEditPoiList() {
 
         // create
