@@ -231,20 +231,20 @@
 					03C2DEB01E5094B500CFDA3E = {
 						CreatedOnToolsVersion = 8.2.1;
 						DevelopmentTeam = QM9YTQA8XQ;
-						LastSwiftMigration = 0900;
+						LastSwiftMigration = 1340;
 						ProvisioningStyle = Manual;
 					};
 					03C2DEC91E5094B500CFDA3E = {
 						CreatedOnToolsVersion = 8.2.1;
 						DevelopmentTeam = QM9YTQA8XQ;
-						LastSwiftMigration = 0900;
+						LastSwiftMigration = 1340;
 						ProvisioningStyle = Automatic;
 						TestTargetID = 03C2DEB01E5094B500CFDA3E;
 					};
 					03C2DED41E5094B500CFDA3E = {
 						CreatedOnToolsVersion = 8.2.1;
 						DevelopmentTeam = QM9YTQA8XQ;
-						LastSwiftMigration = 0900;
+						LastSwiftMigration = 1340;
 						ProvisioningStyle = Automatic;
 						TestTargetID = 03C2DEB01E5094B500CFDA3E;
 					};
@@ -255,6 +255,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 				Base,
 			);
@@ -526,7 +527,7 @@
 				PROVISIONING_PROFILE = "2a87268f-989a-4599-858b-70cb4e0bfcbd";
 				PROVISIONING_PROFILE_SPECIFIER = "poilist-dev-profile";
 				SWIFT_SWIFT3_OBJC_INFERENCE = Off;
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
 		};
@@ -543,7 +544,7 @@
 				PROVISIONING_PROFILE = "7c47d6f7-8088-46c5-b984-083f85712252";
 				PROVISIONING_PROFILE_SPECIFIER = poilist_dist_profile;
 				SWIFT_SWIFT3_OBJC_INFERENCE = Off;
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
 		};
@@ -558,7 +559,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.harrylundstrom.poi-list-iosTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_SWIFT3_OBJC_INFERENCE = Off;
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/poi-list-ios.app/poi-list-ios";
 			};
 			name = Debug;
@@ -574,7 +575,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.harrylundstrom.poi-list-iosTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_SWIFT3_OBJC_INFERENCE = Off;
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/poi-list-ios.app/poi-list-ios";
 			};
 			name = Release;
@@ -589,7 +590,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.harrylundstrom.poi-list-iosUITests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_SWIFT3_OBJC_INFERENCE = Off;
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 				TEST_TARGET_NAME = "poi-list-ios";
 			};
 			name = Debug;
@@ -604,7 +605,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.harrylundstrom.poi-list-iosUITests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_SWIFT3_OBJC_INFERENCE = Off;
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 				TEST_TARGET_NAME = "poi-list-ios";
 			};
 			name = Release;

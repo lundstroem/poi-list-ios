@@ -100,16 +100,16 @@ class DetailViewController: UIViewController {
     }
 
     private func zoomMap() {
-        var zoomRect = MKMapRectNull
+        var zoomRect = MKMapRect.null
         if let coordinate = mapView.userLocation.location {
-            let annotationPoint = MKMapPointForCoordinate(coordinate.coordinate)
-            let pointRect = MKMapRectMake(annotationPoint.x, annotationPoint.y, 0.1, 0.1)
-            zoomRect = MKMapRectUnion(zoomRect, pointRect)
+            let annotationPoint = MKMapPoint(coordinate.coordinate)
+            let pointRect = MKMapRect(x: annotationPoint.x, y: annotationPoint.y, width: 0.1, height: 0.1)
+            zoomRect = zoomRect.union(pointRect)
         }
         for pin in mapView.annotations {
-            let annotationPoint = MKMapPointForCoordinate(pin.coordinate)
-            let pointRect = MKMapRectMake(annotationPoint.x, annotationPoint.y, 0.1, 0.1)
-            zoomRect = MKMapRectUnion(zoomRect, pointRect)
+            let annotationPoint = MKMapPoint(pin.coordinate)
+            let pointRect = MKMapRect(x: annotationPoint.x, y: annotationPoint.y, width: 0.1, height: 0.1)
+            zoomRect = zoomRect.union(pointRect)
         }
         let padding: CGFloat = 100
         mapView.setVisibleMapRect(zoomRect, edgePadding: UIEdgeInsets(top: padding,
@@ -313,8 +313,8 @@ extension DetailViewController: MKMapViewDelegate {
     // MARK: - Dragging an Annotation View
     func mapView(_ mapView: MKMapView,
                  annotationView view: MKAnnotationView,
-                 didChange newState: MKAnnotationViewDragState,
-                 fromOldState oldState: MKAnnotationViewDragState) {
+                 didChange newState: MKAnnotationView.DragState,
+                 fromOldState oldState: MKAnnotationView.DragState) {
         switch newState {
         case .starting:
             xLabel.isHidden = false

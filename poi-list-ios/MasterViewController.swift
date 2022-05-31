@@ -120,7 +120,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     }
 
     override func tableView(_ tableView: UITableView,
-                            commit editingStyle: UITableViewCellEditingStyle,
+                            commit editingStyle: UITableViewCell.EditingStyle,
                             forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
             let context = fetchedResultsController.managedObjectContext
@@ -175,6 +175,8 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
             }
         case .move:
             tableView.moveRow(at: indexPath!, to: newIndexPath!)
+        @unknown default:
+            fatalError("Unknown fetched results controller change result type")
         }
     }
 

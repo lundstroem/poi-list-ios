@@ -37,7 +37,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var managedObjectContext: NSManagedObjectContext?
 
     func application(_ application: UIApplication,
-                     didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
+                     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         guard let masterNavigationController = window?.rootViewController as? UINavigationController,
             let controller = masterNavigationController.topViewController as? MasterViewController else {
                 return false
@@ -54,7 +54,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ app: UIApplication,
                      open url: URL,
-                     options: [UIApplicationOpenURLOptionsKey: Any] = [:]) -> Bool {
+                     options: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {
         if let contents = stringContentResource(url: url) {
             let state = importListFromJSONData(contents: contents, managedObjectContext: managedObjectContext)
             switch state {
