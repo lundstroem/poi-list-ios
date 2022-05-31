@@ -92,7 +92,7 @@ class DetailViewController: UIViewController {
     }
 
     private func trackUserLocation() {
-        if CLLocationManager.authorizationStatus() == .authorizedWhenInUse {
+        if CLLocationManager().authorizationStatus == .authorizedWhenInUse {
             mapView.showsUserLocation = true
         } else {
             CLLocationManager().requestWhenInUseAuthorization()

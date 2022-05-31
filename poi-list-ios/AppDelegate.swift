@@ -38,8 +38,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication,
                      didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        guard let masterNavigationController = window?.rootViewController as? UINavigationController,
-            let controller = masterNavigationController.topViewController as? MasterViewController else {
+        guard let rootNavigationController = window?.rootViewController as? UINavigationController,
+            let controller = rootNavigationController.topViewController as? MainViewController else {
                 return false
         }
         controller.managedObjectContext = persistentContainer.viewContext

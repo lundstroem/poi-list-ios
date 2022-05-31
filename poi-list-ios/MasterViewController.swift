@@ -30,7 +30,7 @@
 import UIKit
 import CoreData
 
-class MasterViewController: UITableViewController, NSFetchedResultsControllerDelegate {
+class MainViewController: UITableViewController, NSFetchedResultsControllerDelegate {
 
     private var detailViewController: DetailViewController?
     var managedObjectContext: NSManagedObjectContext?
