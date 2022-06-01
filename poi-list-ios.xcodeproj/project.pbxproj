@@ -232,7 +232,7 @@
 						CreatedOnToolsVersion = 8.2.1;
 						DevelopmentTeam = QM9YTQA8XQ;
 						LastSwiftMigration = 1340;
-						ProvisioningStyle = Manual;
+						ProvisioningStyle = Automatic;
 					};
 					03C2DEC91E5094B500CFDA3E = {
 						CreatedOnToolsVersion = 8.2.1;
@@ -522,14 +522,16 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Harry Lundstrom (WLN8YTYNJH)";
-				DEVELOPMENT_TEAM = QM9YTQA8XQ;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = "poi-list-ios/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.harrylundstrom.poilist;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "2a87268f-989a-4599-858b-70cb4e0bfcbd";
-				PROVISIONING_PROFILE_SPECIFIER = "poilist-dev-profile";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_SWIFT3_OBJC_INFERENCE = Off;
 				SWIFT_VERSION = 5.0;
 			};
@@ -539,7 +541,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Harry Lundstrom (QM9YTQA8XQ)";
 				DEVELOPMENT_TEAM = QM9YTQA8XQ;
 				INFOPLIST_FILE = "poi-list-ios/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
