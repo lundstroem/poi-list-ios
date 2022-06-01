@@ -12,7 +12,7 @@
 		03BAC0841E59E2B700F349C9 /* PoiViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BAC0821E59E2B700F349C9 /* PoiViewController.swift */; };
 		03C2DEB51E5094B500CFDA3E /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C2DEB41E5094B500CFDA3E /* AppDelegate.swift */; };
 		03C2DEB81E5094B500CFDA3E /* poi_list_ios.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 03C2DEB61E5094B500CFDA3E /* poi_list_ios.xcdatamodeld */; };
-		03C2DEBA1E5094B500CFDA3E /* MasterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C2DEB91E5094B500CFDA3E /* MasterViewController.swift */; };
+		03C2DEBA1E5094B500CFDA3E /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C2DEB91E5094B500CFDA3E /* MainViewController.swift */; };
 		03C2DEBC1E5094B500CFDA3E /* DetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C2DEBB1E5094B500CFDA3E /* DetailViewController.swift */; };
 		03C2DEBF1E5094B500CFDA3E /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 03C2DEBD1E5094B500CFDA3E /* Main.storyboard */; };
 		03C2DEC11E5094B500CFDA3E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 03C2DEC01E5094B500CFDA3E /* Assets.xcassets */; };
@@ -49,7 +49,7 @@
 		03C2DEB11E5094B500CFDA3E /* poi-list-ios.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "poi-list-ios.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		03C2DEB41E5094B500CFDA3E /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		03C2DEB71E5094B500CFDA3E /* poi_list_ios.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = poi_list_ios.xcdatamodel; sourceTree = "<group>"; };
-		03C2DEB91E5094B500CFDA3E /* MasterViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MasterViewController.swift; sourceTree = "<group>"; };
+		03C2DEB91E5094B500CFDA3E /* MainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
 		03C2DEBB1E5094B500CFDA3E /* DetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailViewController.swift; sourceTree = "<group>"; };
 		03C2DEBE1E5094B500CFDA3E /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		03C2DEC01E5094B500CFDA3E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -119,7 +119,7 @@
 				03BAC0821E59E2B700F349C9 /* PoiViewController.swift */,
 				03BA11711E59EB9100612489 /* PoiListViewController.swift */,
 				03C2DEB41E5094B500CFDA3E /* AppDelegate.swift */,
-				03C2DEB91E5094B500CFDA3E /* MasterViewController.swift */,
+				03C2DEB91E5094B500CFDA3E /* MainViewController.swift */,
 				03C2DEBB1E5094B500CFDA3E /* DetailViewController.swift */,
 				03FC38FB1E5DF4AE00093D5A /* EmailManager.swift */,
 				032279F41E5EF22600C5F0E5 /* DataManager.swift */,
@@ -346,7 +346,7 @@
 				032279F51E5EF22600C5F0E5 /* DataManager.swift in Sources */,
 				03FC38FC1E5DF4AE00093D5A /* EmailManager.swift in Sources */,
 				03C2DEB51E5094B500CFDA3E /* AppDelegate.swift in Sources */,
-				03C2DEBA1E5094B500CFDA3E /* MasterViewController.swift in Sources */,
+				03C2DEBA1E5094B500CFDA3E /* MainViewController.swift in Sources */,
 				03BAC0841E59E2B700F349C9 /* PoiViewController.swift in Sources */,
 				2B52FD281E8523680038C641 /* TestHelper.swift in Sources */,
 				03BA11721E59EB9100612489 /* PoiListViewController.swift in Sources */,
