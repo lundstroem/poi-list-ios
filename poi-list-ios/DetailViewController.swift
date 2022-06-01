@@ -221,6 +221,7 @@ class DetailViewController: UIViewController {
             return
         }
         modalViewController.modalPresentationStyle = .popover
+        modalViewController.delegate = self
         modalViewController.managedObjectContext = moc
         modalViewController.poiListModel = poiListModel
         present(modalViewController, animated: true, completion: nil)
@@ -265,6 +266,16 @@ class DetailViewController: UIViewController {
         let cancelAction = UIAlertAction(title: "OK", style: .cancel)
         alertController.addAction(cancelAction)
         present(alertController, animated: true)
+    }
+}
+
+// MARK: - PoiListViewControllerDelegate
+
+extension DetailViewController: PoiListViewControllerDelegate {
+
+    func poiListViewController(poiListViewController: PoiListViewController, updatedTitle: String?) {
+        guard let title = updatedTitle else { return }
+        navigationItem.title = title
     }
 }
 

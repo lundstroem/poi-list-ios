@@ -46,6 +46,10 @@ class PoiViewController: UIViewController {
                                              action: #selector(copyLink(_:)))
         navigationItem.rightBarButtonItem = copyLinkButton
         titleView.becomeFirstResponder()
+
+        infoView.layer.borderColor = UIColor.gray.cgColor
+        infoView.layer.borderWidth = 1.0
+        infoView.layer.cornerRadius = 6
     }
 
     override func viewWillAppear(_ animated: Bool) {

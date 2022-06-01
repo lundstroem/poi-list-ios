@@ -31,6 +31,10 @@ import Foundation
 import UIKit
 import CoreData
 
+protocol PoiListViewControllerDelegate: AnyObject {
+    func poiListViewController(poiListViewController: PoiListViewController, updatedTitle: String?)
+}
+
 class PoiListViewController: UIViewController {
 
     @IBOutlet weak var titleView: UITextField!
@@ -38,6 +42,7 @@ class PoiListViewController: UIViewController {
     @IBOutlet weak var navItem: UINavigationItem!
     var managedObjectContext: NSManagedObjectContext?
     var poiListModel: PoiListModel?
+    weak var delegate: PoiListViewControllerDelegate?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -51,6 +56,10 @@ class PoiListViewController: UIViewController {
         } else if let navTitle = navItem {
             navTitle.title = "New List"
         }
+
+        infoView.layer.borderColor = UIColor.gray.cgColor
+        infoView.layer.borderWidth = 1.0
+        infoView.layer.cornerRadius = 6
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -92,6 +101,7 @@ class PoiListViewController: UIViewController {
                                   managedObjectContext: managedObjectContext)
         }
         exit()
+        delegate?.poiListViewController(poiListViewController: self, updatedTitle: titleView.text)
         dismiss(animated: true, completion: nil)
     }
 }
